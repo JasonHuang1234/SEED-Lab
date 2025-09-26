@@ -27,7 +27,7 @@ while True:
         continue
 
     #Calculate frame center
-    framecenter = frame.shape/2
+    framecenter = frame.shape/2 #Check this line
 
     # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -37,7 +37,7 @@ while True:
 
     if ids is not None:
         # Calculate center of marker
-
+        # CONTINUE FROM HERE
 
         marker_id = ids[0][0]
         msg = f"Marker ID:\n{marker_id}"
