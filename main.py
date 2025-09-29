@@ -28,9 +28,9 @@ while True:
 
     #Calculate frame center
     height, width = frame.shape[:2]
-    x_center = width/2
-    y_center = height/2
-    print(f"The center of the marker is \n{x_center}, {y_center}")
+    framex_center = width/2
+    framey_center = height/2
+    print(f"The center of the frame is \n{framex_center}, {framey_center}")
 
     # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -42,7 +42,7 @@ while True:
         # Pick the lowest marker found
         marker_index = np.argmin(ids)
         marker_corners = corners[marker_index][0]
-        
+
         # Calculate center of marker
         # CONTINUE FROM HERE
         xcenter = np.mean(marker_corners[:, 0])
@@ -50,9 +50,17 @@ while True:
 
         print(f"The center of the marker is \n{xcenter}, {ycenter}")
 
-        marker_id = ids[0][0]
-        msg = f"Marker ID:\n{marker_id}"
-        print(msg)
+        position = 0 #NE
+        if(xcenter >= framex_center){
+            position = 1 #North for now
+        }else{
+            position = 2 #South for now, eventually SW
+        }
+        print(f"The center of the marker is in position \n{position}")
+
+        # marker_id = ids[0][0]
+        # msg = f"Marker ID:\n{marker_id}"
+        # print(msg)
     else:
         print("No markers found")
 
