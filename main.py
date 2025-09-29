@@ -27,7 +27,9 @@ while True:
         continue
 
     #Calculate frame center
-    framecenter = frame.shape/2 #Check this line
+    height, width = frame.shape[:2]
+    x_center = width/2
+    y_center = height/2
 
     # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -36,8 +38,15 @@ while True:
     corners, ids, _ = detector.detectMarkers(gray)
 
     if ids is not None:
+        # Pick the lowest marker found
+        marker = np.min(ids)
+        marker_corners = corners[marker][0]
         # Calculate center of marker
         # CONTINUE FROM HERE
+        xcenter = np.mean(marker_corners[:, 0])
+        ycenter = np.mean(marker_corners[:, 1])
+
+        print("The center of the frame is \n{xcenter}, {ycenter}")
 
         marker_id = ids[0][0]
         msg = f"Marker ID:\n{marker_id}"
