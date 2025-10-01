@@ -52,21 +52,36 @@ void setup() {
 
 void loop() {
   static unsigned long last_time_ms = 0;
-  //Get goal positions from CV somehow
+
+  // Read quadrant from Raspberry Pi via Serial
+  if (Serial.available()) {
+    int quadrant = Serial.read(); // read single byte
+    switch (quadrant) {
+      case 0: goal_M1 = 0; goal_M2 = 0; break; // NE
+      case 1: goal_M1 = 0; goal_M2 = 1; break; // NW
+      case 2: goal_M1 = 1; goal_M2 = 1; break; // SW
+      case 3: goal_M1 = 1; goal_M2 = 0; break; // SE
+      default: break; // ignore invalid input
+    }
+  }
+ 
+  //For testing purposes, manually set goal positions 
+  // goal_M1 = 1; //0 or 1
+  // goal_M2 = 1; //0 or 1
   
   if (goal_M1 != start_M1 | goal_M2 != start_M2) {
-    printf("Goal Position: ");
-    printf(goal_M1), printf("\t"), printf(goal_M2);
+    Serial.print("Goal Position: ");
+    Serial.print(goal_M1), Serial.print("\t"), Serial.print(goal_M2);
     //Motor control to move 180 degrees for M1
-    if (goal_M1 = 0) {
+    if (goal_M1 == 0) {
       // Move motor to spin wheel to 0 counts
-    } else if (goal_M1 = 1) {
+    } else if (goal_M1 == 1) {
       // Move motor to spin wheel to 1600 counts
     }
 
-    if (goal_M2 = 0) {
+    if (goal_M2 == 0) {
       // Move motor to spin wheel to 0 counts
-    } else if (goal_M2 = 1) {
+    } else if (goal_M2 == 1) {
       // Move motor to spin wheel to 1600 counts
     }
 
@@ -89,27 +104,23 @@ void loop() {
   if (millis() - last_time_ms >= 25) { // Update every 25 ms
     last_time_ms = millis();
 
-        // 1) Read encoder counts and convert encoder ticks to radians
-    
+    // 1) Read encoder counts and convert encoder ticks to radians
     float M1_rad = 2 * pi * (float)M1Enc_Counter / counts_per_rev;
     float M2_rad = 2 * pi * (float)M2Enc_Counter / counts_per_rev;
-
     
-    //For positions from Marker
-    //NE
-    //NW
-    
-
+  
     // 2) Convert to distance moved by each wheel since last update (25ms)
     delta_M1 = (M1_rad - posM1_rad) * R;
-    delta_M2 = -(M1_rad - posM2_rad) * R; //negative sign since motors are put in opposite directions
-
+    delta_M2 = -(M2_rad - posM2_rad) * R; //negative sign since motors are put in opposite directions
+    
+    
+    //update linear positions of the wheels
+    posM1_m += delta_M1;
+    posM2_m += delta_M2;
    
-   
-
     //update new wheel positions
     posM1_rad = M1_rad;
-    posM2_rad = M1_rad;
+    posM2_rad = M2_rad;
 
     // 3) Compute center point movement of the robot's axis
     delta_center = (delta_M1 + delta_M2) / 2.0;
@@ -124,7 +135,7 @@ void loop() {
     // 5) Update position of robot
     posX += cos(phi) * delta_center;
     posY += sin(phi) * delta_center;
-
+    
     // 6) Compute current time
     float current_time = (millis() - start_time_ms) / 1000.0;
 
