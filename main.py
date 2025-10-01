@@ -8,6 +8,7 @@
 import cv2
 import numpy as np
 import time
+#import lcd_stuff
 
 # Initialize camera
 cap = cv2.VideoCapture(0)
@@ -30,7 +31,6 @@ while True:
     height, width = frame.shape[:2]
     framex_center = width/2
     framey_center = height/2
-    print(f"The center of the frame is \n{framex_center}, {framey_center}")
 
     # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -56,8 +56,20 @@ while True:
             west = 1
         if(ycenter <= framey_center):
             north = 1
-        print(f"The marker is north: \n{north}")
-        print(f"The marker is west: \n{west}")
+        
+        #Terminal check
+        if(north):
+            if(west):
+                print("Marker pos is NW")
+            else:
+                print("Marker pos is NE")
+        elif(west):
+            print("Marker pos is SW")
+        else:
+            print("Marker pos is SE")
+
+        #Tell threading subsystem
+        
 
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
