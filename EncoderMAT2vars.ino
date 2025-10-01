@@ -1,3 +1,6 @@
+#include <Wire.h>
+
+
 // Constants
 const float pi = 3.14159265;     // pi with 8 decimal places
 const float R = 0.074;           // Wheel radius in meters
@@ -48,6 +51,9 @@ void setup() {
   start_time_ms = millis();
   //initalize serial communication for data output with specified baud rate
   Serial.begin(115200);
+  Wire.begin(MY_ADDR);           // join I2C bus as slave once
+  Wire.onReceive(onReceiveEvent);
+  Wire.onRequest(onRequestEvent);
 }
 
 void loop() {
@@ -166,3 +172,30 @@ void encoder2ISR() {
   if (A == B) M2Enc_Counter+=2;
   else M2Enc_Counter-=2;
 }
+
+
+
+
+// Master writes 1+ bytes here
+void onReceiveEvent(int nbytes) {
+  while (Wire.available()) {
+    number = Wire.read();        // last byte wins if multiple sent
+  }
+  
+  reply = (uint8_t)(1); // wraps naturally mod 256
+  received = true;
+}
+
+// Master reads here
+void onRequestEvent() {
+  Wire.write(reply);        // send one byte
+}
+
+
+// if (received) {
+    Serial.print("Got: "); Serial.print(number);
+    Serial.print("  -> Reply: "); Serial.println(reply);
+    digitalWrite(LED_BUILTIN, number & 0x01);  // just to show activity
+    received = false;
+  }
+  //
