@@ -50,13 +50,13 @@ while True:
 
         print(f"The center of the marker is \n{xcenter}, {ycenter}")
 
-        position = 0 #NE
-        if(xcenter >= framex_center){
-            position = 1 #North for now
-        }else{
-            position = 2 #South for now, eventually SW
-        }
-        print(f"The center of the marker is in position \n{position}")
+        south = 0 
+        west = 0
+        if(xcenter <= framex_center):
+            west = 1
+        if(ycenter <= framey_center):
+            south = 1
+        print(f"The marker is south: \n{south}")
 
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
