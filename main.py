@@ -8,7 +8,7 @@
 import cv2
 import numpy as np
 import time
-#import lcd_stuff
+import lcd_stuff
 
 # Initialize camera
 cap = cv2.VideoCapture(0)
@@ -38,6 +38,10 @@ while True:
     # Detect markers
     corners, ids, _ = detector.detectMarkers(gray)
 
+    # Assumes SE as default position, updates whan marker is detected
+    north = 0 
+    west = 0
+
     if ids is not None:
         # Pick the lowest marker found
         marker_index = np.argmin(ids)
@@ -48,28 +52,27 @@ while True:
         xcenter = np.mean(marker_corners[:, 0])
         ycenter = np.mean(marker_corners[:, 1])
 
-        print(f"The center of the marker is \n{xcenter}, {ycenter}")
-
-        north = 0 
-        west = 0
+        prev_north = north
+        prev_west = west
         if(xcenter <= framex_center):
             west = 1
         if(ycenter <= framey_center):
             north = 1
         
-        #Terminal check
-        if(north):
-            if(west):
-                print("Marker pos is NW")
+        if(prev_north != north | prev_west != west):
+            #Terminal check
+            if(north):
+                if(west):
+                    print("Marker pos is NW")
+                else:
+                    print("Marker pos is NE")
+            elif(west):
+                print("Marker pos is SW")
             else:
-                print("Marker pos is NE")
-        elif(west):
-            print("Marker pos is SW")
-        else:
-            print("Marker pos is SE")
+                print("Marker pos is SE")
 
-        #Tell threading subsystem
-        
+            #Tell threading subsystem
+            lcd_stuff.LCD(north, west)
 
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
