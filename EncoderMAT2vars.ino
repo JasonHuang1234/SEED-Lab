@@ -36,6 +36,8 @@ volatile int start_M2 = 0;
 volatile int goal_M1 = 0;
 volatile int goal_M2 = 0;
 
+// 
+
 void setup() {
   //Set encoder pins as input
   pinMode(M1EncA, INPUT);
@@ -53,23 +55,21 @@ void setup() {
   Serial.begin(115200);
   Wire.begin(MY_ADDR);           // join I2C bus as slave once
   Wire.onReceive(onReceiveEvent);
+  // Checks to see if 
   Wire.onRequest(onRequestEvent);
 }
 
 void loop() {
   static unsigned long last_time_ms = 0;
+  if (received){ // This doesnt really do anything but print random stuff you should put your code in this if statement, 
+    Serial.print("Got: "); Serial.print(number);
+    Serial.print("  -> Reply: "); Serial.println(reply);
+    digitalWrite(LED_BUILTIN, number & 0x01);  // just to show activity
 
-  // Read quadrant from Raspberry Pi via Serial
-  if (Serial.available()) {
-    int quadrant = Serial.read(); // read single byte
-    switch (quadrant) {
-      case 0: goal_M1 = 0; goal_M2 = 0; break; // NE
-      case 1: goal_M1 = 0; goal_M2 = 1; break; // NW
-      case 2: goal_M1 = 1; goal_M2 = 1; break; // SW
-      case 3: goal_M1 = 1; goal_M2 = 0; break; // SE
-      default: break; // ignore invalid input
-    }
-  }
+  // !!!!!! Set received to false so we can exit this loop
+
+    received = false;
+  } // end of if received put to end of code
  
   //For testing purposes, manually set goal positions 
   // goal_M1 = 1; //0 or 1
@@ -176,26 +176,31 @@ void encoder2ISR() {
 
 
 
-// Master writes 1+ bytes here
+// Takes in one byte from the pi, from the arduino, the arduino saves the number as a reply, sets the goals and sets a received event to true.
 void onReceiveEvent(int nbytes) {
   while (Wire.available()) {
     number = Wire.read();        // last byte wins if multiple sent
   }
+  switch number:
+    case 0:
+      goal_M1 = 0;
+      goal_M2 = 0;
+    case 1:
+      goal_M1 = 1;
+      goal_M2 = 0;
+    case 2:
+      goal_M1 = 1;
+      goal_M2 = 1;
+    case 3:
+      goal_M1 = 0;
+      goal_M2 = 1;
   
-  reply = (uint8_t)(1); // wraps naturally mod 256
+  reply = (uint8_t)(number); // wraps naturally mod 256
   received = true;
 }
 
-// Master reads here
+// This on a request event writes to the pi
 void onRequestEvent() {
   Wire.write(reply);        // send one byte
 }
 
-
-// if (received) {
-    Serial.print("Got: "); Serial.print(number);
-    Serial.print("  -> Reply: "); Serial.println(reply);
-    digitalWrite(LED_BUILTIN, number & 0x01);  // just to show activity
-    received = false;
-  }
-  //
