@@ -39,7 +39,7 @@ def LCD(x):
         lcd.message = print(f'Goal Position: {location[0]} {location[1]}')
     else:
         lcd.clear()
-        lcd.color =[100, 0, 0]eue
+        lcd.color =[100, 0, 0]
         time.sleep(1)
         lcd.message = print(f'Bad Response')
 
