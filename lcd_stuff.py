@@ -1,6 +1,7 @@
 from time import sleep
 from smbus2 import SMBus
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import board
 
 def LCD(x):
     i2c_lcd = board.I2C()
