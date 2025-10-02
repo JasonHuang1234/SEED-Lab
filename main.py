@@ -72,6 +72,7 @@ while True:
                 print("Marker pos is SE")
 
             #Tell threading subsystem
+            #This needs to be threaded
             lcd_stuff.LCD(north, west)
 
         # marker_id = ids[0][0]
