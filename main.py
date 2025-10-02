@@ -18,6 +18,10 @@ aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 parameters = cv2.aruco.DetectorParameters()
 detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 
+# Assumes SE as default position, updates whan marker is detected
+north = 0 
+west = 0
+
 while True:
     # Check if the camera frame was successful
     # If unsuccessful throws error and retries
@@ -37,10 +41,6 @@ while True:
 
     # Detect markers
     corners, ids, _ = detector.detectMarkers(gray)
-
-    # Assumes SE as default position, updates whan marker is detected
-    north = 0 
-    west = 0
 
     if ids is not None:
         # Pick the lowest marker found
