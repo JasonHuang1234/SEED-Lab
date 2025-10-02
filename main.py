@@ -64,15 +64,19 @@ while True:
             if(north):
                 if(west):
                     print("Marker pos is NW")
+                    lcd_stuff.LCD(1)
                 else:
                     print("Marker pos is NE")
+                    lcd_stuff.LCD(0)
             elif(west):
                 print("Marker pos is SW")
+                lcd_stuff.LCD(2)
             else:
                 print("Marker pos is SE")
+                lcd_stuff.LCD(3)
 
             #Tell threading subsystem
-            #lcd_stuff.LCD(north, west)
+            
 
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
