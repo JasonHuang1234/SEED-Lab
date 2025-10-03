@@ -36,6 +36,12 @@ volatile int start_M2 = 0;
 volatile int goal_M1 = 0;
 volatile int goal_M2 = 0;
 
+
+// input output vals
+volatile uint8_t number;
+volatile uint8_t reply;
+MY_ADDR 0x08;
+
 // 
 
 void setup() {
@@ -179,7 +185,7 @@ void encoder2ISR() {
 // Takes in one byte from the pi, from the arduino, the arduino saves the number as a reply, sets the goals and sets a received event to true.
 void onReceiveEvent(int nbytes) {
   while (Wire.available()) {
-    number = Wire.read();        // last byte wins if multiple sent
+    number = Wire.read();
   }
   switch number:
     case 0:
@@ -195,7 +201,7 @@ void onReceiveEvent(int nbytes) {
       goal_M1 = 0;
       goal_M2 = 1;
   
-  reply = (uint8_t)(number); // wraps naturally mod 256
+  reply = (uint8_t)(number);
   received = true;
 }
 

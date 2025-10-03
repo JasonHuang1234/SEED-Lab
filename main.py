@@ -64,16 +64,16 @@ while True:
             if(north):
                 if(west):
                     print("Marker pos is NW")
-                    lcd_stuff.LCD(1)
+                    lcd_stuff.LCD(1, 0)
                 else:
                     print("Marker pos is NE")
-                    lcd_stuff.LCD(0)
+                    lcd_stuff.LCD(0, 0)
             elif(west):
                 print("Marker pos is SW")
-                lcd_stuff.LCD(2)
+                lcd_stuff.LCD(1, 1)
             else:
                 print("Marker pos is SE")
-                lcd_stuff.LCD(3)            
+                lcd_stuff.LCD(0, 1)            
         change = 1
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
