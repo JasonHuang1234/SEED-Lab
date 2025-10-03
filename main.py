@@ -21,6 +21,8 @@ detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 # Assumes SE as default position, updates whan marker is detected
 north = 0 
 west = 0
+prev_north = -1
+prev_west = -1
 change = 1
 
 while True:
@@ -49,12 +51,9 @@ while True:
         marker_corners = corners[marker_index][0]
 
         # Calculate center of marker
-        # CONTINUE FROM HERE
         xcenter = np.mean(marker_corners[:, 0])
         ycenter = np.mean(marker_corners[:, 1])
-
-        prev_north = north
-        prev_west = west
+        
         west = xcenter <= framex_center
         north = ycenter <= framey_center
         change = (prev_north != north) | (prev_west != west)
@@ -72,6 +71,8 @@ while True:
                 print("Marker pos is SW")
             else:
                 print("Marker pos is SE")          
+        prev_north = north
+        prev_west = west
         change = 1
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
@@ -80,6 +81,8 @@ while True:
         if change:
             print("No markers found")
             change = 0
+            prev_north = -1
+            prev_west = -1
 
     # Show frame with markers
     cv2.aruco.drawDetectedMarkers(frame, corners, ids)
