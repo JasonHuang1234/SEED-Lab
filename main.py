@@ -8,7 +8,7 @@
 import cv2
 import numpy as np
 import time
-import lcd_stuff
+#import lcd_stuff
 
 # Initialize camera
 cap = cv2.VideoCapture(0)
