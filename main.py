@@ -8,7 +8,7 @@
 import cv2
 import numpy as np
 import time
-#import lcd_stuff
+import lcd_stuff
 
 # Initialize camera
 cap = cv2.VideoCapture(0)
@@ -60,7 +60,7 @@ while True:
         
         if(change):
             #This needs to be threaded
-            #lcd_stuff.LCD(north, west)
+            lcd_stuff.LCD(north, west)
             #Terminal check
             if(north):
                 if(west):
