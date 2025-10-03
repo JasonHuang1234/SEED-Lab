@@ -21,6 +21,7 @@ detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 # Assumes SE as default position, updates whan marker is detected
 north = 0 
 west = 0
+change = 1
 
 while True:
     # Check if the camera frame was successful
@@ -54,12 +55,11 @@ while True:
 
         prev_north = north
         prev_west = west
-        if(xcenter <= framex_center):
-            west = 1
-        if(ycenter <= framey_center):
-            north = 1
+        west = xcenter <= framex_center
+        north = ycenter <= framey_center
+        change = (prev_north != north) | (prev_west != west)
         
-        if(prev_north != north | prev_west != west):
+        if(change):
             #Terminal check
             if(north):
                 if(west):
@@ -73,16 +73,15 @@ while True:
                 lcd_stuff.LCD(2)
             else:
                 print("Marker pos is SE")
-                lcd_stuff.LCD(3)
-
-            #Tell threading subsystem
-            
-
+                lcd_stuff.LCD(3)            
+        change = 1
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
         # print(msg)
     else:
-        print("No markers found")
+        if change:
+            print("No markers found")
+            change = 0
 
     # Show frame with markers
     cv2.aruco.drawDetectedMarkers(frame, corners, ids)
