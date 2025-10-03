@@ -2,8 +2,9 @@ from time import sleep
 from smbus2 import SMBus
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import board
+import time
 
-def LCD(x):
+def LCD(north, west):
     i2c_lcd = board.I2C()
     lcd_columns = 16
     lcd_rows = 2
@@ -13,51 +14,40 @@ def LCD(x):
     i2c = SMBus(1)
     while(True):
         inputnum = int(x)
-        if inputnum > 100 or inputnum < 0:
-            print("Quitting")
-            break
+        print("here")
         try:
             i2c.write_byte(ARD_ADDR,inputnum)
+            print("tried")
         except IOError:
             print("Could not write data to Aruduino")
         sleep(.1)
         reply = i2c.read_byte(ARD_ADDR)
-    if reply == 1:
+        if reply != None:
+            break
+    print(reply)
+    if reply < 4 and  reply  >= 0:
         match x:
             case 0:
-                location = {0, 0}
+                location = (0, 0)
             case 1:
-                location = {0, 1}
+                location = (0, 1)
             case 2:
-                location = {1, 1}
+                location = (1, 1)
             case 3:
-                location = {1, 0}
+                location = (1, 0)
             case _:
-                location = {-1, -1}
+                location = (-1, -1)
         lcd.clear()
         lcd.color =[100, 0, 0]
-        time.sleep(1)
-        lcd.message = print(f'Goal Position: {location[0]} {location[1]}')
+        print(location[0])
+        print(location[1])
+        sleep(1)
+        lcd.message = str(f'Pos: {location[0]} {location[1]}')
+        sleep(100)
     else:
         lcd.clear()
         lcd.color =[100, 0, 0]
-        time.sleep(1)
-        lcd.message = print(f'Bad Response')
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        sleep(1)
+        lcd.message = str(f'Bad Response')
+LCD(1,0)
+quit()

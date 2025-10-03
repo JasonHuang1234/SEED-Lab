@@ -60,20 +60,18 @@ while True:
         change = (prev_north != north) | (prev_west != west)
         
         if(change):
+            #This needs to be threaded
+            lcd_stuff.LCD(north, west)
             #Terminal check
             if(north):
                 if(west):
                     print("Marker pos is NW")
-                    lcd_stuff.LCD(1, 0)
                 else:
                     print("Marker pos is NE")
-                    lcd_stuff.LCD(0, 0)
             elif(west):
                 print("Marker pos is SW")
-                lcd_stuff.LCD(1, 1)
             else:
-                print("Marker pos is SE")
-                lcd_stuff.LCD(0, 1)            
+                print("Marker pos is SE")          
         change = 1
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
