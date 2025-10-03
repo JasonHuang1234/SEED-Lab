@@ -61,7 +61,7 @@ while True:
         
         if(change):
             #This needs to be threaded
-            lcd_stuff.LCD(north, west)
+            #lcd_stuff.LCD(north, west)
             #Terminal check
             if(north):
                 if(west):
