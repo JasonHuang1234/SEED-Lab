@@ -6,6 +6,8 @@ import time
 
 
 def LCD(north, west):
+    print(north)
+    print(west)
     # Make Bytes
     north = int(bool(north)) & 0xFF
     west = int(bool(west)) & 0xFF
@@ -15,24 +17,23 @@ def LCD(north, west):
     lcd.color = (100, 0, 0)
     ARD = 0x08
 
+
     #Loop to send data
     with SMBus(1) as i2c:
-        print("here")
         for i in range(20):
             try:
                 send = [north, west]
                 msg = i2c_msg.write(ARD, send)
                 i2c.i2c_rdwr(msg)
-                print("tried")
                 sleep(.1)
                 reply = i2c_msg.read(ARD, 2)
                 i2c.i2c_rdwr(reply)
                 check = list(reply)
-                if len(check) == 2:
-                    lcd.clear()
-                    print(check[0])
-                    print(check[1])
-                    lcd.message = str(f'Pos: {check[0]} {check[1]}')
+                if len(check) == 2: 
+                    print(f"lcd{check[0]}")
+                    print(f"lcd{check[1]}")
+                    lcd.message = str(f'Pos: {check[0]} {check[1]}').ljust(16)
+                    sleep(0.15)
                     return
             except (IOError, OSError):
                 print("Could not write data to Aruduino")
