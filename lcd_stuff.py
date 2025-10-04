@@ -37,3 +37,9 @@ def LCD(north, west, lcd):
         lcd.clear()
         lcd.message = str('Bad Response')
         return
+    
+i2c_lcd = board.I2C()
+lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
+lcd.clear()
+lcd.color = (50, 0, 50)
+LCD(0, 1, lcd)
