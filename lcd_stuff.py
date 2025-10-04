@@ -24,12 +24,14 @@ def LCD(north, west, lcd):
                 reply = i2c_msg.read(ARD, 2)
                 i2c.i2c_rdwr(reply)
                 check = list(reply)
+                check[0] = int(check[0])
+                check[1] = int(check[1])
                 if check[0] == 0 | check[0] == 1 | check[1] == 0 | check[1] == 1: 
                     print(f"lcd{check[0]}")
                     print(f"lcd{check[1]}")
                     lcd.clear()
                     sleep(0.15)
-                    lcd.message = str(f'Pos: {check[0]} {check[1]}')
+                    lcd.message = str(f'Pos: {int(check[0])} {int(check[1])}')
                     return
                 else:
                     return
