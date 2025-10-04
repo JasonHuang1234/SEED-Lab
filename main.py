@@ -66,9 +66,11 @@ while True:
         west = xcenter <= framex_center
         north = ycenter <= framey_center
         
+        # I changed the | to or
         change = (prev_north != north) or (prev_west != west)
         
         if (change):
+            #Threading code
             myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west, lcd))
             myThread.start()
             if(north):
@@ -82,7 +84,7 @@ while True:
                 print("Marker pos is SE")          
         prev_north = north
         prev_west = west
-        change = 0
+        change = 1
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
         # print(msg)
