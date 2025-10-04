@@ -68,7 +68,7 @@ while True:
         
         change = (prev_north != north) or (prev_west != west)
         
-        if(change):
+        if (change):
             #This needs to be threaded
             lcd_stuff.LCD(north, west, lcd)
             #myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west, lcd))
@@ -84,7 +84,7 @@ while True:
                 print("Marker pos is SE")          
         prev_north = north
         prev_west = west
-        change = 1
+        change = 0
         # marker_id = ids[0][0]
         # msg = f"Marker ID:\n{marker_id}"
         # print(msg)
