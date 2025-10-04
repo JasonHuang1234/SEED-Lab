@@ -27,7 +27,10 @@ def LCD(north, west, lcd):
                 if len(check) == 2: 
                     print(f"lcd{check[0]}")
                     print(f"lcd{check[1]}")
-                    lcd.message = str(f'Pos: {check[0]} {check[1]}')
+                    top = f"Pos: {check[0]} {check[1]}".ljust(16)
+                    bottom = "".ljust(16)
+                    lcd.clear()
+                    lcd.message = top + "\n" + bottom
                     sleep(0.15)
                     return
             except (IOError, OSError):

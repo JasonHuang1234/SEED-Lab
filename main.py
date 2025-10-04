@@ -69,7 +69,6 @@ while True:
         
         if(change):
             #This needs to be threaded
-            lcd_stuff.LCD(north, west)
             myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west, lcd))
             myThread.start()
             if(north):
