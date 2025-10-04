@@ -16,7 +16,7 @@ import board
 i2c_lcd = board.I2C()
 lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
 lcd.clear()
-lcd.color = (100, 0, 0)
+lcd.color = (50, 0, 50)
 time.sleep(1)
 
 # Initialize camera
