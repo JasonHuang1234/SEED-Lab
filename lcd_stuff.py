@@ -11,8 +11,7 @@ def LCD(north, west, lcd):
     # Make Bytes
     north = int(bool(north)) & 0xFF
     west = int(bool(west)) & 0xFF
-    #initialize LCD and I2C
-
+    #initialize i2c
     ARD = 0x08
     #Loop to send data
     with SMBus(1) as i2c:
@@ -28,7 +27,7 @@ def LCD(north, west, lcd):
                 if len(check) == 2: 
                     print(f"lcd{check[0]}")
                     print(f"lcd{check[1]}")
-                    lcd.message = str(f'Pos: {check[0]} {check[1]}').ljust(16)
+                    lcd.message = str(f'Pos: {check[0]} {check[1]}')
                     sleep(0.15)
                     return
             except (IOError, OSError):
