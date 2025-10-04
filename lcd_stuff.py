@@ -20,16 +20,18 @@ def LCD(north, west, lcd):
                 send = [north, west]
                 msg = i2c_msg.write(ARD, send)
                 i2c.i2c_rdwr(msg)
-                sleep(.1)
+                sleep(1)
                 reply = i2c_msg.read(ARD, 2)
                 i2c.i2c_rdwr(reply)
                 check = list(reply)
-                if len(check) == 2: 
+                if check[0] == 0 | check[0] == 1 | check[1] == 0 | check[1] == 1: 
                     print(f"lcd{check[0]}")
                     print(f"lcd{check[1]}")
                     lcd.clear()
                     sleep(0.15)
                     lcd.message = str(f'Pos: {check[0]} {check[1]}')
+                    return
+                else:
                     return
             except (IOError, OSError):
                 print("Could not write data to Aruduino")
