@@ -40,6 +40,3 @@ def LCD(north, west):
         lcd.clear()
         lcd.message = str('Bad Response')
         return
-    
-
-LCD(1,0)

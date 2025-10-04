@@ -8,7 +8,8 @@
 import cv2
 import numpy as np
 import time
-#import lcd_stuff
+import threading
+import lcd_stuff
 
 # Initialize camera
 cap = cv2.VideoCapture(0)
@@ -60,8 +61,9 @@ while True:
         
         if(change):
             #This needs to be threaded
-            #lcd_stuff.LCD(north, west)
-            #Terminal check
+            lcd_stuff.LCD(north, west)
+            myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west))
+            myThread.start()
             if(north):
                 if(west):
                     print("Marker pos is NW")
