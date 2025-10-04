@@ -28,8 +28,8 @@ def LCD(north, west, lcd):
                     print(f"lcd{check[0]}")
                     print(f"lcd{check[1]}")
                     lcd.clear()
-                    lcd.message = str(f'Pos: {check[0]} {check[1]}')
                     sleep(0.15)
+                    lcd.message = str(f'Pos: {check[0]} {check[1]}')
                     return
             except (IOError, OSError):
                 print("Could not write data to Aruduino")
