@@ -10,6 +10,12 @@ import numpy as np
 import time
 import threading
 import lcd_stuff
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import board
+#Initialize LCD
+i2c_lcd = board.I2C()
+lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
+lcd.color = (100, 0, 0)
 
 # Initialize camera
 cap = cv2.VideoCapture(0)
@@ -62,7 +68,7 @@ while True:
         if(change):
             #This needs to be threaded
             lcd_stuff.LCD(north, west)
-            myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west))
+            myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west, lcd))
             myThread.start()
             if(north):
                 if(west):

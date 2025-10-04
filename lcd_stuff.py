@@ -5,19 +5,15 @@ import board
 import time
 
 
-def LCD(north, west):
+def LCD(north, west, lcd):
     print(north)
     print(west)
     # Make Bytes
     north = int(bool(north)) & 0xFF
     west = int(bool(west)) & 0xFF
     #initialize LCD and I2C
-    i2c_lcd = board.I2C()
-    lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
-    lcd.color = (100, 0, 0)
+
     ARD = 0x08
-
-
     #Loop to send data
     with SMBus(1) as i2c:
         for i in range(20):
