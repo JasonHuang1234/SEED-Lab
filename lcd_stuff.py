@@ -26,7 +26,7 @@ def LCD(north, west, lcd):
                 check = list(reply)
                 check[0] = int(check[0])
                 check[1] = int(check[1])
-                if check[0] == 0 | check[0] == 1 | check[1] == 0 | check[1] == 1: 
+                if check[0] == 0 or check[0] == 1 or check[1] == 0 or check[1] == 1: 
                     print(f"lcd{check[0]}")
                     print(f"lcd{check[1]}")
                     lcd.clear()

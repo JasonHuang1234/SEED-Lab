@@ -65,7 +65,7 @@ while True:
         
         west = xcenter <= framex_center
         north = ycenter <= framey_center
-        change = (prev_north != north) | (prev_west != west)
+        change = (prev_north != north) or (prev_west != west)
         
         if(change):
             #This needs to be threaded
