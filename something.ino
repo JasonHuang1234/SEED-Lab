@@ -1,10 +1,11 @@
-volatile int goal_M1 = 0;
-volatile int goal_M2 = 0;
+#include <Wire.h>
 
 // input output vals
-volatile uint8_t number;
-volatile uint8_t reply;
-MY_ADDR 0x08;
+volatile uint8_t input[2];
+volatile bool received = false;
+
+
+#define MY_ADDR 0x08
 
 void setup(){
   Serial.begin(115200);
@@ -20,12 +21,12 @@ void setup(){
 void loop() {
   static unsigned long last_time_ms = 0;
   if (received){ // This doesnt really do anything but print random stuff you should put your code in this if statement, 
-    Serial.print("Got: "); Serial.print(number);
-    Serial.print("Set goal_M1 as:  "); Serial.print(goal_M1);
-    Serial.print("Set goal_M2 as:  "); Serial.print(goal_M2)
-    Serial.print("  -> Reply: "); Serial.println(reply);
-    digitalWrite(LED_BUILTIN, number & 0x01);  // just to show activity
-
+    noInterrupts();
+    Serial.print("Received: ");
+    Serial.print(input[0]);
+    Serial.print(", ");
+    Serial.print(input[1]);
+    interrupts();
   // !!!!!! Set received to false so we can exit this loop
 
     received = false;
@@ -34,28 +35,15 @@ void loop() {
 }
 
 void onReceiveEvent(int nbytes) {
-  while (Wire.available()) {
-    number = Wire.read();
+  int i = 0;
+  while (Wire.available() && i < 2){
+    input[i] = Wire.read();
+    i++;
   }
-  switch number:
-    case 0:
-      goal_M1 = 0;
-      goal_M2 = 0;
-    case 1:
-      goal_M1 = 1;
-      goal_M2 = 0;
-    case 2:
-      goal_M1 = 1;
-      goal_M2 = 1;
-    case 3:
-      goal_M1 = 0;
-      goal_M2 = 1;
-  
-  reply = (uint8_t)(number);
   received = true;
 }
 
 // This on a request event writes to the pi
 void onRequestEvent() {
-  Wire.write(reply);        // send one byte
+  Wire.write((const uint8_t*)input, 2);        // send one byte
 }

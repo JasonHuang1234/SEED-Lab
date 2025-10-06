@@ -8,7 +8,16 @@
 import cv2
 import numpy as np
 import time
+import threading
 import lcd_stuff
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import board
+#Initialize LCD
+i2c_lcd = board.I2C()
+lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
+lcd.clear()
+lcd.color = (50, 0, 50)
+time.sleep(1)
 
 # Initialize camera
 cap = cv2.VideoCapture(0)
@@ -56,12 +65,13 @@ while True:
         
         west = xcenter <= framex_center
         north = ycenter <= framey_center
-        change = (prev_north != north) | (prev_west != west)
         
-        if(change):
-            #This needs to be threaded
-            lcd_stuff.LCD(north, west)
-            #Terminal check
+        change = (prev_north != north) or (prev_west != west)
+        
+        if (change):
+            #Threading code
+            myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west, lcd))
+            myThread.start()
             if(north):
                 if(west):
                     print("Marker pos is NW")
@@ -97,3 +107,5 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 time.sleep(2)
+lcd.clear()
+lcd.color = (0,0,0)
