@@ -34,6 +34,7 @@ float Kp_pos[2] = {10,10};
 float Ki_pos[2] = {2.5,2.5};
 
 float desired_pos[2] = {0,0}; //radians
+float return_vals[2] = {0, 0};
 float desired_vel[2];   //rad/s
 
 float actual_pos[2];   //radians
@@ -57,7 +58,6 @@ unsigned long last_time_ms;
 unsigned long start_time_ms;
 float current_time;
 bool finished = false; // Define bool to use to print finished
-volatile bool received = false;
 
 
 
@@ -100,13 +100,12 @@ void setup() {
 }
 
 void loop() {
-    if (received){
     if (received){ // This doesnt really do anything but print random stuff you should put your code in this if statement, 
     noInterrupts();
     Serial.print("Received: ");
-    Serial.print(input[0]);
+    Serial.print(desired_pos[0]);
     Serial.print(", ");
-    Serial.print(input[1]);
+    Serial.print(desired_pos[1]);
     interrupts();
 
 
@@ -250,10 +249,11 @@ void M2Enc_Update() { // Interrupt function for motor 2's encoder
 }
 
 
-void onReceiveEvent(int nbytes) {
+void onReceiveEvent() {
   int i = 0;
   while (Wire.available() && i < 2){
     desired_pos[i] = Wire.read();
+    return_vals[i] = desired_pos[i];
     i++;
   }
   received = true;
@@ -261,6 +261,6 @@ void onReceiveEvent(int nbytes) {
 
 // This on a request event writes to the pi
 void onRequestEvent() {
-  Wire.write((const uint8_t*)desired_pos, 2);        // send one byte
+  Wire.write((const uint8_t*)return_vals, 2);        // send one byte
 }
 
