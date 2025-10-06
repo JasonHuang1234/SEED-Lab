@@ -19,7 +19,6 @@ void setup(){
 
 
 void loop() {
-  static unsigned long last_time_ms = 0;
   if (received){ // This doesnt really do anything but print random stuff you should put your code in this if statement, 
     noInterrupts();
     Serial.print("Received: ");

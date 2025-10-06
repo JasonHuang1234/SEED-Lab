@@ -57,6 +57,8 @@ unsigned long last_time_ms;
 unsigned long start_time_ms;
 float current_time;
 bool finished = false; // Define bool to use to print finished
+volatile bool received = false;
+
 
 
 void setup() {
@@ -98,127 +100,129 @@ void setup() {
 }
 
 void loop() {
-  unsigned long now = millis();
-  //if (now - last_time_ms < desired_Ts_ms) return;
-  float dt = (now-last_time_ms)/1000; //Change in time, bc it's not always exactly 10
-  current_time = (float)(now-start_time_ms)/1000;    // Update current_time
-  
-  if (received){ // This doesnt really do anything but print random stuff you should put your code in this if statement, 
-    Serial.print("Got: "); Serial.print(number);
-    Serial.print("  -> Reply: "); Serial.println(reply);
-    digitalWrite(LED_BUILTIN, number & 0x01);  // just to show activity
+    if (received){
+    if (received){ // This doesnt really do anything but print random stuff you should put your code in this if statement, 
+    noInterrupts();
+    Serial.print("Received: ");
+    Serial.print(input[0]);
+    Serial.print(", ");
+    Serial.print(input[1]);
+    interrupts();
 
-  // !!!!!! Set received to false so we can exit this loop
 
-    received = false;
-  } // end of if received put to end of code
+    unsigned long now = millis();
+    //if (now - last_time_ms < desired_Ts_ms) return;
+    float dt = (now-last_time_ms)/1000; //Change in time, bc it's not always exactly 10
+    current_time = (float)(now-start_time_ms)/1000;    // Update current_time
 
-  
-  float wheel_rad[2];
-  float delta_M[2]; //delta distance for each wheel
+    float wheel_rad[2];
+    float delta_M[2]; //delta distance for each wheel
 
-  for(int i=0;i<2;i++) {
+    for(int i=0;i<2;i++) {
+
+      // Update motor positions
+      actual_pos[i] = 2*pi*(float)Enc_Counter[i]/counts_per_rev;
+
+      // Calculate motor velocity
+      actual_vel[i] = (actual_pos[i] - last_pos[i]) / dt;
+
+      // Calculate position and integral errors
+      pos_error[i] = desired_pos[i] - actual_pos[i];
+      
+      integral_error[i] = integral_error[i] + pos_error[i]*(dt);
+      integral_error[i] = constrain(integral_error[i], -10.0, 10.0); //CHANGE CONSTRAINTS
+
+      // Calculate desired velocity and velocity error 
+      desired_vel[i] = Kp_pos[i] * pos_error[i] + Ki_pos[i] * integral_error[i];
+      vel_error[i] = desired_vel[i] - actual_vel[i];
+
+      // Calculate applied voltage
+      applied_voltage[i] = Kp_vel[i]*vel_error[i];
+
+      // Calculate PWM signal 
+      PWM[i] = constrain( (abs(applied_voltage[i]) / BATTERY_VOLTAGE) * 255, 0, 255);
+      
+      // Save for next iteration
+      last_pos[i] = actual_pos[i];
+
+      // For odometry
+      wheel_rad[i] = actual_pos[i];
+      delta_M[i] = (wheel_rad[i] - prev_rad[i]) * R;
+      prev_rad[i] = wheel_rad[i];
+
+    }
+
+    // Set motor driver sign pins
+    if (applied_voltage[0] > 0) { digitalWrite(M1Voltage_Sign, HIGH); }  
+    else { digitalWrite(M1Voltage_Sign, LOW); }
+    if (applied_voltage[1] > 0) { digitalWrite(M2Voltage_Sign, LOW); }  
+    else { digitalWrite(M2Voltage_Sign, HIGH); }
+
+    // Write PWM signals to motors
+    analogWrite(M1PWM, PWM[0]);
+    analogWrite(M2PWM, PWM[1]);
+
+    //for odometry
+    float delta_center = (delta_M[0] + delta_M[1]) / 2.0;
+    phi += (delta_M[1] - delta_M[0]) / wheel_base;
+
+    // Normalize phi
+    if (phi > pi) phi -= 2 * pi;
+    if (phi < -pi) phi += 2 * pi;
+
+    posX += cos(phi) * delta_center;
+    posY += sin(phi) * delta_center;
+
+    //for testing lol
+    // Change desired postion at 1 second
+    // if (current_time >= 1 && current_time < 5) {
+    //   desired_pos[0] = pi;
+    //   desired_pos[1] = pi;
+    // } else if (current_time >= 5 && current_time < 8) {
+    //   desired_pos[0] = 0;
+    //   desired_pos[1] = 0;
+    // }
+
+    // Record data for 3 seconds
+    if (current_time <= 6) {
+
+      // Print time, voltage, position, and velocity
+      Serial.print(current_time);
+      Serial.print("\t");
+      Serial.print(constrain(applied_voltage[0],-7.5,7.5));
+      Serial.print("\t");
+      Serial.print(actual_pos[0]);
+      Serial.print("\t");
+      Serial.println(actual_vel[0]);
+      Serial.print(posX); 
+      Serial.print("\t");
+      Serial.print(posY); 
+      Serial.print("\t");
+      Serial.println(phi);
+
+    } else if (current_time >= 3) {  // >=3 ??
+
+      // Print finished for MATLAB
+      if (!finished) {
+        Serial.println("Finished");
+      }
+      finished = true;
+
+    }
 
     // Update motor positions
-    actual_pos[i] = 2*pi*(float)Enc_Counter[i]/counts_per_rev;
+    //for(int i=0;i<2;i++) {
+    //  last_pos[i] = actual_pos[i];
+    //} //already inside loop so redundant
 
-    // Calculate motor velocity
-    actual_vel[i] = (actual_pos[i] - last_pos[i]) / dt;
+    while (millis()<last_time_ms + desired_Ts_ms) {
+    // Wait until desired time passes to go top of the loop
+    } //Line at top replaces this??
 
-    // Calculate position and integral errors
-    pos_error[i] = desired_pos[i] - actual_pos[i];
-    
-    integral_error[i] = integral_error[i] + pos_error[i]*(dt);
-    integral_error[i] = constrain(integral_error[i], -10.0, 10.0); //CHANGE CONSTRAINTS
+    last_time_ms = now;  
 
-    // Calculate desired velocity and velocity error 
-    desired_vel[i] = Kp_pos[i] * pos_error[i] + Ki_pos[i] * integral_error[i];
-    vel_error[i] = desired_vel[i] - actual_vel[i];
-
-    // Calculate applied voltage
-    applied_voltage[i] = Kp_vel[i]*vel_error[i];
-
-    // Calculate PWM signal 
-    PWM[i] = constrain( (abs(applied_voltage[i]) / BATTERY_VOLTAGE) * 255, 0, 255);
-    
-    // Save for next iteration
-    last_pos[i] = actual_pos[i];
-
-    // For odometry
-    wheel_rad[i] = actual_pos[i];
-    delta_M[i] = (wheel_rad[i] - prev_rad[i]) * R;
-    prev_rad[i] = wheel_rad[i];
-
-  }
-
-  // Set motor driver sign pins
-  if (applied_voltage[0] > 0) { digitalWrite(M1Voltage_Sign, HIGH); }  
-  else { digitalWrite(M1Voltage_Sign, LOW); }
-  if (applied_voltage[1] > 0) { digitalWrite(M2Voltage_Sign, LOW); }  
-  else { digitalWrite(M2Voltage_Sign, HIGH); }
-
-  // Write PWM signals to motors
-  analogWrite(M1PWM, PWM[0]);
-  analogWrite(M2PWM, PWM[1]);
-
-  //for odometry
-  float delta_center = (delta_M[0] + delta_M[1]) / 2.0;
-  phi += (delta_M[1] - delta_M[0]) / wheel_base;
-
-  // Normalize phi
-  if (phi > pi) phi -= 2 * pi;
-  if (phi < -pi) phi += 2 * pi;
-
-  posX += cos(phi) * delta_center;
-  posY += sin(phi) * delta_center;
-
-  //for testing lol
-  // Change desired postion at 1 second
-  // if (current_time >= 1 && current_time < 5) {
-  //   desired_pos[0] = pi;
-  //   desired_pos[1] = pi;
-  // } else if (current_time >= 5 && current_time < 8) {
-  //   desired_pos[0] = 0;
-  //   desired_pos[1] = 0;
-  // }
-
-  // Record data for 3 seconds
-  if (current_time <= 6) {
-
-    // Print time, voltage, position, and velocity
-    Serial.print(current_time);
-    Serial.print("\t");
-    Serial.print(constrain(applied_voltage[0],-7.5,7.5));
-    Serial.print("\t");
-    Serial.print(actual_pos[0]);
-    Serial.print("\t");
-    Serial.println(actual_vel[0]);
-    Serial.print(posX); 
-    Serial.print("\t");
-    Serial.print(posY); 
-    Serial.print("\t");
-    Serial.println(phi);
-
-  } else if (current_time >= 3) {  // >=3 ??
-
-    // Print finished for MATLAB
-    if (!finished) {
-      Serial.println("Finished");
-    }
-    finished = true;
-
-  }
-
-  // Update motor positions
-  //for(int i=0;i<2;i++) {
-  //  last_pos[i] = actual_pos[i];
-  //} //already inside loop so redundant
-
-  while (millis()<last_time_ms + desired_Ts_ms) {
-  // Wait until desired time passes to go top of the loop
-  } //Line at top replaces this??
-
-  last_time_ms = now;  
+      received = false;
+  } // end of if received put to end of code
 }
 
 void M1Enc_Update() { // Interrupt function for motor 1's encoder
@@ -246,38 +250,17 @@ void M2Enc_Update() { // Interrupt function for motor 2's encoder
 }
 
 
-
 void onReceiveEvent(int nbytes) {
-  while (Wire.available()) {
-    number = Wire.read();
+  int i = 0;
+  while (Wire.available() && i < 2){
+    desired_pos[i] = Wire.read();
+    i++;
   }
-  switch(number) {
-    case 0:
-      desired_pos[0] = 0;
-      desired_pos[1] = 0;
-      break;
-    case 1:
-      desired_pos[0] = pi;
-      desired_pos[1] = 0;
-      break;
-    case 2:
-      desired_pos[0] = pi;
-      desired_pos[1] = pi;
-      break;
-    case 3:
-      desired_pos[0] = 0;
-      desired_pos[1] = pi;
-      break;
-  }
-  integral_error[0] = 0;
-  integral_error[1] = 0;
-  reply = (uint8_t)(number);
   received = true;
-  
 }
 
 // This on a request event writes to the pi
 void onRequestEvent() {
-  Wire.write(reply);        // send one byte
+  Wire.write((const uint8_t*)desired_pos, 2);        // send one byte
 }
 
