@@ -34,7 +34,7 @@ float Kp_pos[2] = {10,10};
 float Ki_pos[2] = {2.5,2.5};
 
 float desired_pos[2] = {0,0}; //radians
-float return_vals[2] = {0, 0};
+volatile uint8_t return_vals[2] = {0, 0};
 float desired_vel[2];   //rad/s
 
 float actual_pos[2];   //radians
@@ -107,11 +107,13 @@ void loop() {
     Serial.print(", ");
     Serial.print(desired_pos[1]);
     interrupts();
+    received = false;
+    }
 
 
     unsigned long now = millis();
     //if (now - last_time_ms < desired_Ts_ms) return;
-    float dt = (now-last_time_ms)/1000; //Change in time, bc it's not always exactly 10
+    float dt = (now-last_time_ms)/1000.0f; //Change in time, bc it's not always exactly 10
     current_time = (float)(now-start_time_ms)/1000;    // Update current_time
 
     float wheel_rad[2];
@@ -219,9 +221,6 @@ void loop() {
     } //Line at top replaces this??
 
     last_time_ms = now;  
-
-      received = false;
-  } // end of if received put to end of code
 }
 
 void M1Enc_Update() { // Interrupt function for motor 1's encoder
