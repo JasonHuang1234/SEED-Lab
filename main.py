@@ -66,7 +66,6 @@ while True:
         west = xcenter <= framex_center
         north = ycenter <= framey_center
         
-        # I changed the | to or
         change = (prev_north != north) or (prev_west != west)
         
         if (change):
