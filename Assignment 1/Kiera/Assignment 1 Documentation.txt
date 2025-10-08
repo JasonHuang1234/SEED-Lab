@@ -1,0 +1,22 @@
+(a) What is an IDE?
+IDE stands for integrated development environment and refers to a computer environment that provide a variety of tools for software development.
+
+(b) What are the key words to handle exceptions in Python?
+The word 'Exception' handles exceptions in Python
+
+(c) How do you define a function in Python?
+Functions in python are defined as follows:
+def function_name(parameters):
+	code here
+
+The indent after the function definition is very important because Python is a whitespace delineated language.
+
+(d) Suppose a function returns the variable data. How can you find the data type for this variable?
+To get the type of a variable type() can be used. This might look like:
+print(type(data))
+
+(e) What are two methods that can be used with list objects, and what do those methods do
+append(): adds something to the end of a list. Syntax is as follows:
+list.append("New item")
+pop(): removes the last (highest index) item in the list. Also returns that item if it is assigned to a variable. Syntax:
+list.pop() or last = list.pop()
