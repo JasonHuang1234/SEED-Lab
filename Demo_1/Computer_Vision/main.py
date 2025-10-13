@@ -73,7 +73,7 @@ while True:
         ycenter = np.mean(marker_corners[:, 1])
 
         rvec, tvec, _ = cv.aruco.estimatePoseSinglemarkers(marker_corners,marker_length,mtx,dist )
-        cv.drawFrameAxes(frame, mtx, dist, rvec,tvec, 0.03)
+        cv.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
         x = tvec[0][0][0]
         z = tvec[0][0][2]
         x_actual = x - x_center

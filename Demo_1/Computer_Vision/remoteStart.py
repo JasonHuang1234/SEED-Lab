@@ -2,7 +2,7 @@ from time import sleep
 from smbus2 import SMBus, i2c_msg
 import struct
 
-TARGET_DIST = 5.5     # in feet
+TARGET_DIST = 65     # in inches
 TARGET_ANG = -45.25   # in degrees
 
 # Pack floats into bytes (little-endian)
