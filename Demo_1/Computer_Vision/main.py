@@ -12,6 +12,12 @@ import threading
 import lcd_stuff
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import board
+with np.load('calibration_data.npz') as X:
+    mtx, dist = [X[i] for i in ('camera_matrix', 'dist_coeff')]
+
+
+marker_length = 50.0
+
 #Initialize LCD
 i2c_lcd = board.I2C()
 lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
@@ -30,9 +36,11 @@ detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 # Assumes SE as default position, updates whan marker is detected
 north = 0 
 west = 0
-prev_north = -1
-prev_west = -1
+prev_angle = 0
 change = 1
+
+def anglecalc(x,y):
+
 
 while True:
     # Check if the camera frame was successful
@@ -59,34 +67,31 @@ while True:
         marker_index = np.argmin(ids)
         marker_corners = corners[marker_index][0]
 
+
         # Calculate center of marker
         xcenter = np.mean(marker_corners[:, 0])
         ycenter = np.mean(marker_corners[:, 1])
-        
-        west = xcenter <= framex_center
-        north = ycenter <= framey_center
-        
-        change = (prev_north != north) or (prev_west != west)
-        
+
+        rvec, tvec, _ = cv.aruco.estimatePoseSinglemarkers(marker_corners,marker_length,mtx,dist )
+        cv.drawFrameAxes(frame, mtx, dist, rvec,tvec, 0.03)
+        x = tvec[0][0][0]
+        z = tvec[0][0][2]
+        x_actual = x - x_center
+        angle = np.arctan(x_actual/z)
+        angle = np.rad2deg(angle)
+        angle = np.round(angle,4)
+        print(angle)
+        if angle == prev_angle:
+            change = 0
+        else:
+            change = 1
+        prev_angle = angle
+
+
         if (change):
-            #Threading code
             myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west, lcd))
             myThread.start()
-            if(north):
-                if(west):
-                    print("Marker pos is NW")
-                else:
-                    print("Marker pos is NE")
-            elif(west):
-                print("Marker pos is SW")
-            else:
-                print("Marker pos is SE")          
-        prev_north = north
-        prev_west = west
-        change = 1
-        # marker_id = ids[0][0]
-        # msg = f"Marker ID:\n{marker_id}"
-        # print(msg)
+    
     else:
         if change:
             print("No markers found")
