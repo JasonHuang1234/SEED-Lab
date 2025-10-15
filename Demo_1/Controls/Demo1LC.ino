@@ -37,6 +37,8 @@ float Ki_pos[2] = {3,3};
 
 float desired_pos_xy[2] = {0,0}; // {angle (degrees), distance (meters)}
 bool angle_set = false; // Checks whether angle has been set and robot should move forward
+bool angle_changed = false;
+bool distance_changed = false;
 float desired_pos_r[2] = {0,0}; // radians
 volatile uint8_t return_vals[2] = {0, 0};
 float desired_vel[2];   //rad/s
@@ -120,15 +122,20 @@ void loop() {
       desired_pos_xy[0] = 90;
       desired_pos_xy[1] = 0;
       angle_set = false;
+      angle_changed = true;
+      distance_changed = true;
       finished = true;
     }
 
     // Move robot to desired angle
     if (!angle_set) { // If the robot has not moved to the desired angle
 
-      // Calculations to convert desired robot angle to desired wheel angle
-      desired_pos_r[0] += -( (desired_pos_xy[0]*(pi/180)) * wheel_base ) / (2*R);
-      desired_pos_r[1] += ( (desired_pos_xy[0]*(pi/180)) * wheel_base ) / (2*R);
+      if (angle_changed) {
+        // Calculations to convert desired robot angle to desired wheel angle
+        desired_pos_r[0] += -( (desired_pos_xy[0]*(pi/180)) * wheel_base ) / (2*R);
+        desired_pos_r[1] += ( (desired_pos_xy[0]*(pi/180)) * wheel_base ) / (2*R);
+        angle_changed = false;
+      }
 
       // Testing
       Serial.print("X Position: ");
@@ -151,9 +158,12 @@ void loop() {
 
     } else if (angle_set) { 
 
-      // Calculations to convert desired robot distance to desired wheel angle
-      desired_pos_r[0] += desired_pos_xy[1] / R;
-      desired_pos_r[1] += desired_pos_xy[1] / R;
+      if (distance_changed) {
+        // calculations to convert desired robot distance to desired wheel angle
+        desired_pos_r[0] += desired_pos_xy[1] / R;
+        desired_pos_r[1] += desired_pos_xy[1] / R;
+        distance_changed = false;
+      }
 
     }
 
@@ -163,7 +173,7 @@ void loop() {
     current_time = (float)(now-start_time_ms)/1000;    // Update current_time
 
     float wheel_rad[2];
-    float delta_M[2]; // delta distance for each wheel
+    float delta_M[2]; //delta distance for each wheel
 
     for(int i=0;i<2;i++) {
 
