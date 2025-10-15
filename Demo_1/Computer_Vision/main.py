@@ -12,8 +12,13 @@ import threading
 import lcd_stuff
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import board
-with np.load('calibration_data.npz') as X:
-    mtx, dist = [X[i] for i in ('newk', 'dist')]
+with np.load('calibration_full.npz') as data:
+    mtx = data['camera_matrix']
+    dist = data['dist_coeff']
+    mapx = data['mapx']
+    mapy = data['mapy']
+    newK = data['newK']
+    roi = data['roi']
 
 
 marker_length = 50.0

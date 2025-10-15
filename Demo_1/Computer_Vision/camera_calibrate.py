@@ -67,4 +67,10 @@ print("Mean reprojection error per image:", mean_err)
 # Optional: precompute undistort maps for fast video use (save if you like)
 newK, roi = cv.getOptimalNewCameraMatrix(K, dist, (w, h), alpha=0)
 mapx, mapy = cv.initUndistortRectifyMap(K, dist, None, newK, (w, h), cv.CV_32FC1)
-np.savez("undistort_maps.npz", mapx=mapx, mapy=mapy, newK=newK, roi=np.array(roi), dist=dist)
+np.savez("calibration_full.npz",
+         camera_matrix=K,
+         dist_coeff=dist,
+         mapx=mapx,
+         mapy=mapy,
+         newK=newK,
+         roi=np.array(roi))

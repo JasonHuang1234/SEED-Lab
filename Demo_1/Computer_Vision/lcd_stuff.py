@@ -14,5 +14,5 @@ import time
 #Function defined
 def LCD(angle, lcd):
     lcd.clear()
-    lcd.message = str(f'Angle is {}')
+    lcd.message = str(f'Angle is {angle}')
     return
