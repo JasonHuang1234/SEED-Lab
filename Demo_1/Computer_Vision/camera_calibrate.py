@@ -4,7 +4,7 @@ import glob
 import os
 
 # --- settings ---
-pattern_size = (7, 6)         # inner corners (cols, rows)
+pattern_size = (7, 5)         # inner corners (cols, rows)
 square_size  = 30.0            # set to your square edge length (e.g., 24.0 for mm)
 img_glob     = "./calib/*.jpg"  # adjust path/pattern
 
