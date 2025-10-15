@@ -110,7 +110,7 @@ void loop() {
     Serial.print("Received: ");
     Serial.print(desired_pos_r[0]);
     Serial.print(", ");
-    Serial.print(desired_pos_r[1]);
+    Serial.println(desired_pos_r[1]);
     interrupts();
     received = false;
     }
@@ -124,29 +124,36 @@ void loop() {
     }
 
     // Move robot to desired angle
-    if (!angle_set) { // If the robot has not moved to the des
+    if (!angle_set) { // If the robot has not moved to the desired angle
 
       // Calculations to convert desired robot angle to desired wheel angle
-      desired_pos_r[0] = -( (desired_pos_xy[0]*(pi/180)) * wheel_base ) / (2*R);
-      desired_pos_r[1] = ( (desired_pos_xy[0]*(pi/180)) * wheel_base ) / (2*R);
-      Serial.print(desired_pos_r[0]);
-      Serial.print("\t");
-      Serial.print(desired_pos_r[1]);
-      Serial.print("\t");
-      Serial.print(desired_pos_xy[0]);
-      Serial.print("\t");
-      Serial.println(phi);
+      desired_pos_r[0] += -( (desired_pos_xy[0]*(pi/180)) * wheel_base ) / (2*R);
+      desired_pos_r[1] += ( (desired_pos_xy[0]*(pi/180)) * wheel_base ) / (2*R);
 
-      if ( abs(phi - (desired_pos_xy[0]*(pi/180))) < ANGLE_TOLERANCE) { // If the robots angle is within the desired tolerance, allow robot to move desired distance
+      // Testing
+      Serial.print("X Position: ");
+      Serial.print(posX);
+      Serial.print("\t");
+      Serial.print("Y Position: ");
+      Serial.print(posY);
+      Serial.print("\t");
+      Serial.print("Phi: ");
+      Serial.print(phi);
+      Serial.print("\t");
+      Serial.print("Distance Travelled: ");
+      Serial.println(sqrt( posX^2 + posY^2 ));
+
+      // If the robots angle is within the desired tolerance, allow robot to move desired distance
+      if ( (abs(phi - (desired_pos_xy[0]*(pi/180))) < ANGLE_TOLERANCE) && actual_vel[0] <  0.1) {
         angle_set = true;
         Serial.println("Angle Set");
       }
 
     } else if (angle_set) { 
 
-      // calculations to convert desired robot distance to desired wheel angle
-      // desired_pos_r[0] = desired_pos_xy[1] / R;
-      // desired_pos_r[1] = desired_pos_xy[1] / R;
+      // Calculations to convert desired robot distance to desired wheel angle
+      desired_pos_r[0] += desired_pos_xy[1] / R;
+      desired_pos_r[1] += desired_pos_xy[1] / R;
 
     }
 
@@ -156,7 +163,7 @@ void loop() {
     current_time = (float)(now-start_time_ms)/1000;    // Update current_time
 
     float wheel_rad[2];
-    float delta_M[2]; //delta distance for each wheel
+    float delta_M[2]; // delta distance for each wheel
 
     for(int i=0;i<2;i++) {
 
@@ -173,7 +180,7 @@ void loop() {
       integral_error[i] = constrain(integral_error[i], -10.0, 10.0); // CHANGE CONSTRAINTS
 
       // Calculate desired velocity and velocity error 
-      desired_vel[i] = Kp_pos[i] * pos_error[i] + Ki_pos[i] * integral_error[i];
+      desired_vel[i] = constrain(Kp_pos[i] * pos_error[i] + Ki_pos[i] * integral_error[i], -10, 10); // Constrain maximum desired veolcity to prevent slipping?
       vel_error[i] = desired_vel[i] - actual_vel[i];
 
       // Calculate applied voltage
@@ -246,6 +253,9 @@ void loop() {
     last_time_ms = now;  
 }
 
+
+
+
 void M1Enc_Update() { // Interrupt function for motor 1's encoder
 
   // Read encoder pins
@@ -285,4 +295,3 @@ void onReceiveEvent() {
 void onRequestEvent() {
   Wire.write((const uint8_t*)return_vals, 2);        // send one byte
 }
-
