@@ -25,7 +25,7 @@ fx = mtx[0,0]
 print(cx)
 
 
-marker_length = 50.0
+marker_length = 49.0
 
 #Initialize LCD
 i2c_lcd = board.I2C()
