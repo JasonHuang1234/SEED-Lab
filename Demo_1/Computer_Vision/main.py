@@ -84,10 +84,18 @@ while True:
         cv2.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
         x = tvec[0][0][0]
         z = tvec[0][0][2]
-        angle = np.arctan(x/z)
-        angle = np.rad2deg(angle)
-        angle = np.round(angle,2)
-        angle2 = np.degrees(np.arctan((xcenter - cx) / fx))
+       # 3D geometric angle
+        angle_pose = np.degrees(np.arctan(x / z))
+
+        # pixel-based fallback
+        angle_pixel = np.degrees(np.arctan((xcenter - cx) / fx))
+
+        # blend or sanity check
+        if abs(angle_pose - angle_pixel) > 2:
+            angle = angle_pixel   # fallback to simpler one if pose noisy
+        else:
+            angle = angle_pose
+
         if angle == prev_angle:
             change = 0
         else:
