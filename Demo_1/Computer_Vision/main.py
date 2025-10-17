@@ -83,7 +83,7 @@ while True:
         #cv.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
         #x = tvec[0][0][0]
         #z = tvec[0][0][2]
-        angle = np.arctan(xcenter-cx,fx)
+        angle = np.arctan2(xcenter-cx,fx)
         angle = np.rad2deg(angle)
         angle = np.round(angle,4)
         print(angle)
