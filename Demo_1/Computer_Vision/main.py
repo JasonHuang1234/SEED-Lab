@@ -60,8 +60,8 @@ while True:
 
     #Calculate frame center
     height, width = frame.shape[:2]
-    framex_center = width//2
-    framey_center = height//2
+    framex_center = width/2
+    framey_center = height/2
     # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -86,6 +86,7 @@ while True:
         angle = np.arctan(x/z)
         angle = np.rad2deg(angle)
         angle = np.round(angle,2)
+        angle2 = np.degrees(np.arctan((xcenter - cx) / fx))
         if angle == prev_angle:
             change = 0
         else:
@@ -95,6 +96,7 @@ while True:
 
         if (change):
             print(angle)
+            print(f"Better angle? {angle2}")
             myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
             myThread.start()
     
