@@ -105,7 +105,6 @@ while True:
 
         if (change):
             print(angle)
-            print(f"Better angle? {angle2}")
             myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
             myThread.start()
     
