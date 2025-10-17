@@ -85,7 +85,7 @@ while True:
         #z = tvec[0][0][2]
         angle = np.arctan2(xcenter-cx,fx)
         angle = np.rad2deg(angle)
-        angle = np.round(angle,4)
+        angle = np.round(angle,2)
         print(angle)
         if angle == prev_angle:
             change = 0
