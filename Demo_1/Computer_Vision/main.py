@@ -85,17 +85,7 @@ while True:
         x = tvec[0][0][0]
         z = tvec[0][0][2]
        # 3D geometric angle
-        angle_pose = np.degrees(np.arctan(x / z))
-
-        # pixel-based fallback
-        angle_pixel = np.degrees(np.arctan((xcenter - cx) / fx))
-
-        # blend or sanity check
-        if abs(angle_pose - angle_pixel) > 2:
-            angle = angle_pixel   # fallback to simpler one if pose noisy
-        else:
-            angle = angle_pose
-
+        angle = np.degrees(np.arctan(x / z))
         if angle == prev_angle:
             change = 0
         else:
