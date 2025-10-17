@@ -22,6 +22,7 @@ with np.load('calibration_full.npz') as data:
 
 cx = mtx[0,2]
 fx = mtx[0,0]
+print(cx)
 
 
 marker_length = 50.0
@@ -83,10 +84,9 @@ while True:
         #cv.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
         #x = tvec[0][0][0]
         #z = tvec[0][0][2]
-        angle = np.arctan2(xcenter-cx,fx)
+        angle = np.arctan2(xcenter-framex_center,fx)
         angle = np.rad2deg(angle)
         angle = np.round(angle,2)
-        print(angle)
         if angle == prev_angle:
             change = 0
         else:
@@ -95,6 +95,7 @@ while True:
 
 
         if (change):
+            print(angle)
             myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
             myThread.start()
     
