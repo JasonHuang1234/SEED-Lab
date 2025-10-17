@@ -95,7 +95,7 @@ while True:
 
 
         if (change):
-            myThread = threading.Thread(target=lcd_stuff.LCD, args=(north, west, lcd))
+            myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
             myThread.start()
     
     else:
