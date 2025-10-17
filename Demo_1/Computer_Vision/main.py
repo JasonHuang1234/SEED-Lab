@@ -72,7 +72,7 @@ while True:
     if ids is not None:
         # Pick the lowest marker found
         marker_index = np.argmin(ids)
-        marker_corners = corners[marker_index][0]
+        marker_corners = corners[marker_index]
 
 
         # Calculate center of marker
