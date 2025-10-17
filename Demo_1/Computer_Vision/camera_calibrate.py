@@ -4,9 +4,9 @@ import glob
 import os
 
 # --- settings ---
-pattern_size = (7, 5)         # inner corners (cols, rows)
-square_size  = 30.0            # set to your square edge length (e.g., 24.0 for mm)
-img_glob     = "./calib/*.jpg"  # adjust path/pattern
+pattern_size = (7, 6)         # inner corners (cols, rows)
+square_size  = 15           # set to your square edge length (e.g., 24.0 for mm)
+img_glob     = "./calib_images/*.jpg"  # adjust path/pattern
 
 # termination criteria for corner refinement
 criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 50, 1e-6)
