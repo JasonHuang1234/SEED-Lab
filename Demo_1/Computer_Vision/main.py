@@ -62,8 +62,6 @@ while True:
     height, width = frame.shape[:2]
     framex_center = width//2
     framey_center = height//2
-    cv2.line(frame, (framex_center, 0), (framex_center, height), (0, 255, 0), 2)
-
     # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
