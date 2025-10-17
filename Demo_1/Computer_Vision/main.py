@@ -22,7 +22,7 @@ with np.load('calibration_full.npz') as data:
 
 cx = mtx[0,2]
 fx = mtx[0,0]
-print(cx)
+print(f"cs is {cx}")
 
 
 marker_length = 49.0
@@ -61,7 +61,6 @@ while True:
     #Calculate frame center
     height, width = frame.shape[:2]
     framex_center = width//2
-    print(framex_center)
     framey_center = height//2
     cv2.circle(frame, (framex_center, framey_center), 5, (0, 0, 255), -1)
     # Convert to grayscale
