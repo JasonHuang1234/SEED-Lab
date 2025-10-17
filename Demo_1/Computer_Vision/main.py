@@ -60,8 +60,9 @@ while True:
 
     #Calculate frame center
     height, width = frame.shape[:2]
-    framex_center = width/2
-    framey_center = height/2
+    framex_center = width//2
+    framey_center = height//2
+    cv2.circle(frame, (framex_center, framey_center), 5, (0, 0, 255), -1)
     # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
