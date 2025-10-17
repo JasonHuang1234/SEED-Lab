@@ -20,6 +20,9 @@ with np.load('calibration_full.npz') as data:
     newK = data['newK']
     roi = data['roi']
 
+cx = mtx[0,2]
+fx = mtx[0,0]
+
 
 marker_length = 50.0
 
@@ -75,12 +78,12 @@ while True:
         xcenter = np.mean(marker_corners[:, 0])
         ycenter = np.mean(marker_corners[:, 1])
 
-        rvec, tvec, _ = cv.aruco.estimatePoseSinglemarkers(marker_corners,marker_length,mtx,dist )
-        cv.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
+        #The below code is more accurate but much slower
+        #rvec, tvec, _ = cv.aruco.estimatePoseSinglemarkers(marker_corners,marker_length,mtx,dist )
+        #cv.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
         x = tvec[0][0][0]
         z = tvec[0][0][2]
-        x_actual = x - x_center
-        angle = np.arctan(x_actual/z)
+        angle = np.arctan(xcenter-cx,fx)
         angle = np.rad2deg(angle)
         angle = np.round(angle,4)
         print(angle)
