@@ -25,7 +25,7 @@ fx = mtx[0,0]
 print(f"cs is {cx}")
 
 
-marker_length = 49.0
+marker_length = 0.049
 
 #Initialize LCD
 i2c_lcd = board.I2C()
@@ -57,7 +57,8 @@ while True:
         print("Failed to capture frame")
         time.sleep(1)
         continue
-
+    
+    frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
     #Calculate frame center
     height, width = frame.shape[:2]
     framex_center = width//2
@@ -76,16 +77,18 @@ while True:
 
 
         # Calculate center of marker
-        xcenter = np.mean(marker_corners[:, 0])
-        ycenter = np.mean(marker_corners[:, 1])
+        xcenter = np.mean(marker_corners[0][:, 0])
+        ycenter = np.mean(marker_corners[0][:, 1])
+
 
         #The below code is more accurate but much slowe
-        x = (framex_center-cx)/fx
+        x = (xcenter - cx) / fx
         rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(marker_corners,marker_length,mtx,dist )
         cv2.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
         z = tvec[0][0][2]
        # 3D geometric angle
-        angle = np.degrees(np.arctan(x / z))
+        angle = np.degrees(np.arctan(x))
+        print(angle)
         if angle == prev_angle:
             change = 0
         else:
