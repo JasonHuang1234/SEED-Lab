@@ -79,10 +79,10 @@ while True:
         xcenter = np.mean(marker_corners[:, 0])
         ycenter = np.mean(marker_corners[:, 1])
 
-        #The below code is more accurate but much slower
+        #The below code is more accurate but much slowe
+        x = (framex_center-cx)/fx
         rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(marker_corners,marker_length,mtx,dist )
         cv2.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
-        x = tvec[0][0][0]
         z = tvec[0][0][2]
        # 3D geometric angle
         angle = np.degrees(np.arctan(x / z))
