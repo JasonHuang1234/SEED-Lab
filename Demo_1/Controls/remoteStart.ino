@@ -1,6 +1,4 @@
-#include <Wire.h>
-
-#define MY_ADDR 0x08
+#include "RemoteStart.h"
 
 float received_distance = 0.0;
 float received_rotation = 0.0;

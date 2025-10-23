@@ -9,6 +9,8 @@
 #define M2EncB 6
 #define MY_ADDR 0x08  // Arduino's I2C address
 #include <Wire.h>
+// Uncomment when ready to test remote start
+// remoteStart.h
 
 volatile uint8_t number;
 volatile uint8_t reply;
@@ -103,6 +105,8 @@ void setup() {
   // Print ready for MATLAB
   // Serial.println("Ready!");
 
+  // Uncomment  when ready to test remote start (initialize remote start)
+  // setupRemoteStart();
 }
 
 void loop() {
@@ -261,6 +265,8 @@ void loop() {
     } //Line at top replaces this??
 
     last_time_ms = now;  
+  // Uncomment when ready to test remote start (run remote start listener)
+  // loopRemoteStart();
 }
 
 
