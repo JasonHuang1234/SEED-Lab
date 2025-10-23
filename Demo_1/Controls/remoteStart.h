@@ -4,6 +4,7 @@
 #include <Wire.h>
 #define MY_ADDR 0x08
 
+// Extern should make it so that the main sketch can grab these values
 extern float received_distance;
 extern float received_rotation;
 extern bool received;

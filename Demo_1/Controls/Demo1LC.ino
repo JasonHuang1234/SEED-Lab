@@ -9,8 +9,9 @@
 #define M2EncB 6
 #define MY_ADDR 0x08  // Arduino's I2C address
 #include <Wire.h>
-// Uncomment when ready to test remote start
-// remoteStart.h
+// Uncomment to test remote start, won't work unless you also uncomment if statement at 268
+// This will conflict with if statement on line 124
+#include "RemoteStart.h"
 
 volatile uint8_t number;
 volatile uint8_t reply;
@@ -105,20 +106,18 @@ void setup() {
   // Print ready for MATLAB
   // Serial.println("Ready!");
 
-  // Uncomment  when ready to test remote start (initialize remote start)
-  // setupRemoteStart();
 }
 
 void loop() {
 
     if (received){ // This doesnt really do anything but print random stuff you should put your code in this if statement, 
-    noInterrupts();
-    Serial.print("Received: ");
-    Serial.print(desired_pos_r[0]);
-    Serial.print(", ");
-    Serial.println(desired_pos_r[1]);
-    interrupts();
-    received = false;
+      noInterrupts();
+      Serial.print("Received: ");
+      Serial.print(desired_pos_r[0]);
+      Serial.print(", ");
+      Serial.println(desired_pos_r[1]);
+      interrupts();
+      received = false;
     }
 
     // Change desired position at 5 seconds
@@ -265,8 +264,29 @@ void loop() {
     } //Line at top replaces this??
 
     last_time_ms = now;  
-  // Uncomment when ready to test remote start (run remote start listener)
-  // loopRemoteStart();
+
+    // Uncomment to test remote start
+    // if (received) {
+    //   noInterrupts();  // avoid partial reads
+    //   desired_pos_xy[0] = received_rotation; // degrees from remote start
+    //   desired_pos_xy[1] = received_distance; // feet from remote start
+    //   received = false;
+    //   interrupts();
+
+    //   // Convert to radians/meters for control
+    //   desired_pos_r[0] = (desired_pos_xy[0] * pi / 180.0); // deg → rad
+    //   desired_pos_r[1] = (desired_pos_xy[1] * 0.3048);     // ft → m
+
+    //   angle_set = false;
+    //   angle_changed = true;
+    //   distance_changed = true;
+
+    //   Serial.print("Updated remote start command | Angle: ");
+    //   Serial.print(desired_pos_xy[0]);
+    //   Serial.print("°, Distance: ");
+    //   Serial.print(desired_pos_xy[1]);
+    //   Serial.println(" ft");
+    // }
 }
 
 
@@ -297,17 +317,19 @@ void M2Enc_Update() { // Interrupt function for motor 2's encoder
 }
 
 
-void onReceiveEvent() {
-  int i = 0;
-  while (Wire.available() && i < 2){
-    desired_pos_r[i] = Wire.read();
-    return_vals[i] = desired_pos_r[i];
-    i++;
-  }
-  received = true;
-}
 
-// This on a request event writes to the pi
-void onRequestEvent() {
-  Wire.write((const uint8_t*)return_vals, 2);        // send one byte
-}
+//Old comms code for new comms code uncomment lines 13, 268-288
+// void onReceiveEvent() {
+//   int i = 0;
+//   while (Wire.available() && i < 2){
+//     desired_pos_r[i] = Wire.read();
+//     return_vals[i] = desired_pos_r[i];
+//     i++;
+//   }
+//   received = true;
+// }
+
+// // This on a request event writes to the pi
+// void onRequestEvent() {
+//   Wire.write((const uint8_t*)return_vals, 2);        // send one byte
+// }
