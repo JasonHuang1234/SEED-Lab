@@ -147,8 +147,8 @@ if __name__ == '__main__':
     main(
         image_dir=IMAGE_DIR,
         fisheye=False,                  # Set to True for fisheye lens
-        pattern_size=(9, 6),            # Inner corners
-        square_size=0.034,              # Chessboard square size (meters)
+        pattern_size=(7, 5),            # Inner corners
+        square_size=0.03,              # Chessboard square size (meters)
         threads=4,
         json_file=JSON_FILE,
         debug_dir=DEBUG_DIR
