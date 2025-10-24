@@ -1,3 +1,9 @@
+// Remote Start C++ Code
+// Primary developer: Kiera Crawford
+// 10/15/2025
+// Description: Follower code for remote start. Recieves target positions, 
+// these must be updated externally in if(recieved)
+
 #include <Arduino.h>
 #include <Wire.h>
 #include "RemoteStart.h"

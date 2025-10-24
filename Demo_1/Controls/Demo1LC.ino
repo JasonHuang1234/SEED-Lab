@@ -1,3 +1,9 @@
+// Main Demo 1 Sketch
+// Primary developers: Stephanie and Cameron
+// MM/DD/2025
+// Description: Navigates robot to a travel a target distance
+// or rotate a set number of degrees
+
 #define Motor_Enable 4
 #define M1Voltage_Sign 7
 #define M2Voltage_Sign 8
@@ -9,8 +15,8 @@
 #define M2EncB 6
 #define MY_ADDR 0x08  // Arduino's I2C address
 #include <Wire.h>
-// Uncomment to test remote start, won't work unless you also uncomment if statement at 268
-// This will conflict with if statement on line 124
+// Uncomment to test remote start, won't work unless you also uncomment if statement at 275
+// This will conflict with if statement on line 130
 #include "RemoteStart.h"
 
 volatile uint8_t number;

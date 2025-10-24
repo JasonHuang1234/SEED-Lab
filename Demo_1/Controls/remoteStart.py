@@ -1,3 +1,8 @@
+# Raspberry Pi Remote start
+# Primary developer: Kiera Crawford
+# 10/15/2025
+# Description: Transmits target positions to arduino using I2C
+
 from time import sleep
 from smbus2 import SMBus, i2c_msg
 import struct
