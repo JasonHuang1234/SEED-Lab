@@ -16,6 +16,8 @@ objp = np.zeros((pattern_size[0] * pattern_size[1], 3), np.float32)
 objp[:, :2] = np.mgrid[0:pattern_size[0], 0:pattern_size[1]].T.reshape(-1, 2)
 objp *= square_size  # gives real-world scale if square_size != 1
 
+
+
 objpoints = []   # 3D points in world coordinates
 imgpoints = []   # 2D points in image plane
 
@@ -37,10 +39,7 @@ for fname in images:
     ok, corners = cv.findChessboardCorners(gray, pattern_size, flags=flags)
 
     if ok:
-        # refine
-        corners = cv.cornerSubPix(gray, corners, (11,11), (-1,-1), criteria)
-        imgpoints.append(corners)
-        objpoints.append(objp.copy())  # copy is safer
+         is safer
 
         found_count += 1
     else:
