@@ -1,5 +1,5 @@
 # Seed Lab
-This is the group 4 seed lab repository
+This is the group 4 seed lab repository. We used a Teams project board for task management.
 
 # Demo 1
 
