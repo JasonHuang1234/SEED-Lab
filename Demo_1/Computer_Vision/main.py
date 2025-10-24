@@ -48,7 +48,8 @@ west = 0
 prev_angle = 0
 change = 1
 
-
+avg = 0
+sum = 0
 while True:
     # Check if the camera frame was successful
     # If unsuccessful throws error and retries
@@ -98,18 +99,24 @@ while True:
         z = tvec[0][0][2]
        # 3D geometric angle
         angle = np.degrees(np.arctan(x))
-        print(angle)
-        if angle == prev_angle:
-            change = 0
-        else:
-            change = 1
-        prev_angle = angle
-
-
-        if (change):
+        sum += angle
+        avg += 1
+        if avg = 6:
+            angle = sum/avg
+            angle = np.round(angle, 2)
             print(angle)
-            myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
-            myThread.start()
+            if angle == prev_angle:
+                change = 0
+            else:
+                change = 1
+            prev_angle = angle
+
+            if (change):
+                print(angle)
+                myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
+                myThread.start()
+            sum = 0
+            avg = 0
     
     else:
         if change:
