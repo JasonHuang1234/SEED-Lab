@@ -20,8 +20,8 @@ with np.load('calibration_full.npz') as data:
     newK = data['newK']
     roi = data['roi']
 
-cx = mtx[0,2]
-fx = mtx[0,0]
+cx = newK[0,2]
+fx = newK[0,0]
 print(f"cs is {cx}")
 
 
@@ -58,7 +58,17 @@ while True:
         time.sleep(1)
         continue
     
+    # Apply undistortion using precomputed maps
     frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+
+    # Optional: crop ROI for perfectly rectified image
+    x, y, w, h = roi
+    frame = frame[y:y+h, x:x+w]
+
+    # Show original vs undistorted
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
     #Calculate frame center
     height, width = frame.shape[:2]
     framex_center = width//2
