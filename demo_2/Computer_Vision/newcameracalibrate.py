@@ -53,8 +53,11 @@ def detect_aruco_markers(image_name, image, board, dictionary, params):
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 params = cv2.aruco.DetectorParameters()
 charuco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-board = cv2.aruco.CharucoBoard_create(
-squaresX=10, squaresY=14, squareLength=0.734375, markerLength=0.53125, dictionary=charuco_dict
+board = cv2.aruco.CharucoBoard(
+    (10, 14),               # tuple of (squaresX, squaresY)
+    0.734375,               # squareLength
+    0.53125,                # markerLength
+    charuco_dict
 )
 
 
