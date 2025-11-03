@@ -1,5 +1,5 @@
 # Main function
-# Primary developer: Kiera Crawford
+# Primary developer: Kiera and Jason
 # 9/26/2025
 # Description: This function detects an Aruco Marker based on its dictionary position
 # Than the function uses a calibrated camera matrix to calculate the angle of the aruco marker relative to the camera.
@@ -100,7 +100,7 @@ while True:
         angle = np.degrees(np.arctan(x))
         sum += angle
         avg += 1
-        if avg = 6:
+        if avg == 6:
             angle = sum/avg
             angle = np.round(angle, 2)
             print(angle)
