@@ -15,7 +15,7 @@ import lcd_stuff
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import board
 from direction import detect_arrow_color
-from remoteStart import distandangle
+#from remoteStart import distandangle
 
 with np.load('calibration_full.npz') as data:
     mtx = data['camera_matrix']
@@ -154,7 +154,7 @@ while True:
             print("No markers found")
             change = 0
     if abs(angle) <= 0.02:
-        direction = detect_arrow_color(frame, marker_corners)
+        #direction = detect_arrow_color(frame, marker_corners)
         print(f"direction is {direction}")
 
 
