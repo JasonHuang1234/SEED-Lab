@@ -4,6 +4,9 @@
 # Description: This function detects an Aruco Marker based on its dictionary position
 # Than the function uses a calibrated camera matrix to calculate the angle of the aruco marker relative to the camera.
 
+
+# Current Command idea, begin with sending a turn command until the code receives a stop byte 
+
 import cv2
 import numpy as np
 import time
@@ -11,6 +14,9 @@ import threading
 import lcd_stuff
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import board
+from direction import detect_arrow_color
+from remoteStart import distandangle
+
 with np.load('calibration_full.npz') as data:
     mtx = data['camera_matrix']
     dist = data['dist_coeff']
@@ -24,7 +30,8 @@ fx = newK[0,0]
 print(f"cs is {cx}")
 
 
-marker_length = 0.049
+#Calibration was normalized for inches
+marker_length = 2
 
 #Initialize LCD
 i2c_lcd = board.I2C()
@@ -41,14 +48,19 @@ aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 parameters = cv2.aruco.DetectorParameters()
 detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 
-# Assumes SE as default position, updates whan marker is detected
-north = 0 
-west = 0
+
 prev_angle = 0
 change = 1
 
+
+#Averaging values for camera inputs
 avg = 0
+avg2 = 0
 sum = 0
+sum2 = 0
+distsum = 0
+avgtot = 20
+
 while True:
     # Check if the camera frame was successful
     # If unsuccessful throws error and retries
@@ -93,36 +105,59 @@ while True:
 
         #The below code is more accurate but much slowe
         x = (xcenter - cx) / fx
-        rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(marker_corners,marker_length,mtx,dist )
-        cv2.drawFrameAxes(frame,mtx,dist,rvec,tvec,0.03)
+        # tvec provides distance info
+        # rvec provides rotation info, less important/useful unless we want to course correct
+        rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(marker_corners,marker_length,newK,None)
+        cv2.drawFrameAxes(frame,newK,dist,rvec,tvec,0.03)
         z = tvec[0][0][2]
+        x = tvec[0][0][0]
+
+
+        print(f"dist {z}")
        # 3D geometric angle
         angle = np.degrees(np.arctan(x))
+        angle2 = np.degrees()
         sum += angle
+        sum2 += angle2
         avg += 1
-        if avg == 6:
+        distsum += z
+        if avg == avgtot:
+            angle2 = sum2/avg
             angle = sum/avg
             angle = np.round(angle, 2)
-            print(angle)
-            if angle == prev_angle:
+            angle = np.round(angle,2)
+            distance_val = distsum/avg
+            if np.round(angle,1) == np.round(prev_angle,1):
                 change = 0
             else:
                 change = 1
             prev_angle = angle
 
+
+        
             if (change):
-                print(angle)
+                print(f"angle 1 is {angle} \n")
+                print(f"angle 2 is {angle2} \n")
+                print(f"distance in inches from marker is {distance_val} \n")
                 myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
                 myThread.start()
+                arduinoinput = f"{angle} {distance_val}"
+                distandangle(arduinoinput)
             sum = 0
+            sum2 = 0
             avg = 0
+            distsum = 0
     
+    # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
     else:
         if change:
             print("No markers found")
             change = 0
-            prev_north = -1
-            prev_west = -1
+    if abs(angle) <= 0.02:
+        direction = detect_arrow_color(frame, marker_corners)
+        print(f"direction is {direction}")
+
+
 
     # Show frame with markers
     cv2.aruco.drawDetectedMarkers(frame, corners, ids)

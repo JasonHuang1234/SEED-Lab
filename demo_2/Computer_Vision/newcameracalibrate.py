@@ -9,7 +9,7 @@ import glob
 import os
 
 def detect_charuco_corners(image_name,image, board, dictionary, params):
-    marker_ids, marker_corners = detect_aruco_markers(image, board, dictionary,params)
+    marker_ids, marker_corners = detect_aruco_markers(image_name, image, board, dictionary, params)
 
     if marker_ids is not None and len(marker_ids) > 0:
 
@@ -59,11 +59,7 @@ board = cv2.aruco.CharucoBoard(
     0.53125,                # markerLength
     charuco_dict
 )
-
-
-# --- settings ---
-pattern_size = (7, 5)          # inner corners (cols, rows)
-square_size  = 0.03             
+       
 img_glob     = "./calib_images/*.jpg"  # adjust path/pattern
 
 images = sorted(glob.glob(img_glob))

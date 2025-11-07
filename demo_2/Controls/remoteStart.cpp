@@ -14,11 +14,28 @@
 volatile float received_distance = 0.0;
 volatile float received_rotation = 0.0;
 volatile bool received = false;
+volatile uint8_t command = 0x00;
 
 // I2C receive and request handlers
 void onReceiveEvent(int numBytes) {
-  if (numBytes >= 8) {
+  if (numBytes >= 9) {
     union { byte b[4]; float f; } dist, rot;
+    if (Wire.available()){
+      command = Wire.read();
+    }
+    switch(command.):
+      case 0:
+        // Thinking this should force it to keep turning
+
+      case 1:
+       // Thinking this should stop the turn, and have it wait for an angle/dist val, bascly we found the marker
+      case 2:
+        // Thinking this should tell it to move accoridng to angle and distance inputs
+      case 3:
+        // Thinking this should tell it to turn left or right, and stop moving anything else
+      case 4:
+        // Thinking this should tell it to turn left or right, and stop moving anything else
+
 
     // Read 4 bytes for distance
     for (int i = 0; i < 4; i++) {
