@@ -1,53 +1,98 @@
-# Raspberry Pi Remote start
+# Raspberry Pi Remote Start
 # Primary developer: Kiera Crawford
 # 10/15/2025
-# Description: Transmits target positions to Arduino using I2C until user quits
+# Description: Transmits target positions to Arduino using I2C until user quits.
+# The Arduino defaults to continuous turning until commanded otherwise.
 
 from time import sleep
 from smbus2 import SMBus, i2c_msg
 import struct
 
-# May
+ARD_ADDR = 0x08  # Arduino I2C address
 
+# Command byte meanings (must match Arduino)
+COMMANDS = {
+    "turn": 0x00,
+    "stop": 0x01,
+    "target": 0x02,
+    "left": 0x03,
+    "right": 0x04
+}
 
-# I am defining input as {dist angle}, than I will be defining command as a single byte input, 0x00 is turn, 0x01 stop, 0x02 is use inputs, 0x03 is left, 0x04 is right
-def distandangle(input, command)
-    ARD = 0x08  # Arduino I2C address
+def send_target(distance, angle, command_name):
+    """Send command + float distance + float angle over I2C"""
+    if command_name not in COMMANDS:
+        print(f"Invalid command '{command_name}'. Valid options: {list(COMMANDS.keys())}")
+        return
+
+    command = COMMANDS[command_name]
+
+    # Pack floats as little-endian
+    dist_bytes = struct.pack('<f', float(distance))
+    ang_bytes = struct.pack('<f', float(angle))
+    packet = bytes([command]) + dist_bytes + ang_bytes  # 9 bytes total
+
     with SMBus(1) as i2c:
-        while True:
-            try:
-                parts = input.split()
-                if len(parts) != 2:
-                    print("Please enter exactly two values: distance and angle.")
-                    continue
+        try:
+            # Send packet
+            msg = i2c_msg.write(ARD_ADDR, packet)
+            i2c.i2c_rdwr(msg)
 
-                target_dist = float(parts[0])
-                target_ang = float(parts[1])
-                cmd = command
+            # Arduino confirmation
+            reply = i2c_msg.read(ARD_ADDR, 8)
+            i2c.i2c_rdwr(reply)
+            check = list(reply)
 
-                # Pack floats into bytes (little-endian)
-                dist_bytes = struct.pack('<f', target_dist)
-                ang_bytes = struct.pack('<f', target_ang)
-                send = bytes([cmd]) + dist_bytes + ang_bytes
-                # Added additional Command bit
-                # Send 8 bytes: 4 for distance, 4 for angle
-                msg = i2c_msg.write(ARD, send)
-                i2c.i2c_rdwr(msg)
-                sleep(1)
+            dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
+            ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
 
-                # Read 8-byte reply
-                reply = i2c_msg.read(ARD, 8)
-                i2c.i2c_rdwr(reply)
-                check = list(reply)
+            print(f"Arduino confirmed: {dist_reply:.2f} m, {ang_reply:.2f}°")
 
-                # Unpack floats
-                dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
-                ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
+        except OSError:
+            print("I2C communication error — ensure Arduino is powered and connected.")
 
-                print(f"Arduino confirmed: {dist_reply:.2f} in, {ang_reply:.2f}°")
 
-            except ValueError:
-                print("Invalid input. Please enter numeric values for distance and angle.")
-            except (IOError, OSError):
-                print("I2C communication error. Exiting...")
+def main():
+    print("Remote Start Interface (Ctrl+C to quit)")
+    print("Commands: turn | stop | target | left | right")
+    print("For 'target', input: <distance> <angle>")
+
+    while True:
+        try:
+            user_in = input("Enter command: ").strip().lower()
+
+            if user_in == "quit":
+                print("Exiting...")
                 break
+
+            elif user_in == "turn":
+                send_target(0, 0, "turn")
+
+            elif user_in == "stop":
+                send_target(0, 0, "stop")
+
+            elif user_in in ["left", "right"]:
+                send_target(0, 0, user_in)
+
+            elif user_in.startswith("target"):
+                parts = user_in.split()
+                if len(parts) != 3:
+                    print("Usage: target <distance> <angle>")
+                    continue
+                dist = float(parts[1])
+                ang = float(parts[2])
+                send_target(dist, ang, "target")
+
+            else:
+                print("Invalid command. Try again.")
+
+            sleep(0.5)
+
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            break
+        except ValueError:
+            print("Invalid numeric input.")
+
+if __name__ == "__main__":
+    main()
