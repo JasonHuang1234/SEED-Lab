@@ -22,7 +22,7 @@ const float BATTERY_VOLTAGE = 7.8;
 const float ANGLE_TOLERANCE = 0.75 * (pi/180); // 0.75 degrees in radians
 const float DISTANCE_TOLERANCE = 1 * 0.0254; // 0.75 inches in meters
 
-float applied_voltage[2] = {0,0};
+float applied_voltage_rho[2] = {0,0}, applied_voltage_phi[2] = {0,0};
 float PWM[2];
 
 // Gain variables for proportional and PI controllers
@@ -154,10 +154,6 @@ void loop() {
   }
   */
 
-  // Calculate desired velocity of each motor
-  desired_vel[0] = (desired_robot_vel / WHEEL_RADIUS) - (desired_robot_omega * (WHEEL_BASE/(2*WHEEL_RADIUS)));
-  desired_vel[1] = (desired_robot_vel / WHEEL_RADIUS) + (desired_robot_omega * (WHEEL_BASE/(2*WHEEL_RADIUS)));
-
   for(int i=0;i<2;i++) {
     // Update motor positions
     wheel_rad[i] = 2*pi*(float)Enc_Counter[i]/counts_per_rev;
@@ -167,22 +163,22 @@ void loop() {
     vel_error[i] = (desired_robot_vel / WHEEL_RADIUS) - actual_vel[i];
 
     // Calculate applied voltage
-    // applied_voltage[i] = constrain(Kp_vel[i]*vel_error[i],-BATTERY_VOLTAGE,BATTERY_VOLTAGE);
-    applied_voltage[i] = Kp_vel[i]*( (desired_robot_vel / WHEEL_RADIUS) - actual_vel[i] )
-
-    // Calculate PWM signal 
-    PWM[0] = constrain( (abs(applied_voltage[0]) / BATTERY_VOLTAGE) * 255, 0, 255);
-    PWM[1] = constrain( (abs(applied_voltage[1]) / BATTERY_VOLTAGE) * 255, 0, 255);
+    applied_voltage_rho[i] = constrain(Kp_vel[i]*( (desired_robot_vel / WHEEL_RADIUS) - actual_vel[i] ),-BATTERY_VOLTAGE,BATTERY_VOLTAGE);
+    applied_voltage_phi[i] = Kp_vel[i]*(desired_robot_omega * (WHEEL_BASE/(2*WHEEL_RADIUS));
 
     // For odometry
     delta_M[i] = (wheel_rad[i] - prev_rad[i]) * WHEEL_RADIUS;
     prev_rad[i] = wheel_rad[i];
   }
 
+  // Calculate PWM signal 
+  PWM[0] = constrain( (abs(applied_voltage_rho[0]-applied_voltage_phi[0]) / BATTERY_VOLTAGE) * 255, 0, 255);
+  PWM[1] = constrain( (abs(applied_voltage[1]+applied_voltage_phi[1]) / BATTERY_VOLTAGE) * 255, 0, 255);
+
   // Set motor driver sign pins
-  if (applied_voltage[0] > 0) { digitalWrite(M1Voltage_Sign, HIGH); }  
+  if ( (applied_voltage_rho[0]-applied_voltage_phi[0]) > 0) { digitalWrite(M1Voltage_Sign, HIGH); }  
   else { digitalWrite(M1Voltage_Sign, LOW); }
-  if (applied_voltage[1] > 0) { digitalWrite(M2Voltage_Sign, LOW); }  
+  if ( (applied_voltage[1]+applied_voltage_phi[1]) > 0) { digitalWrite(M2Voltage_Sign, LOW); }  
   else { digitalWrite(M2Voltage_Sign, HIGH); }
 
   // Write PWM signals to motors
@@ -269,4 +265,3 @@ void onRequestEvent() {
   for (int i = 0; i < 4; i++) Wire.write(dist.b[i]);
   for (int i = 0; i < 4; i++) Wire.write(rot.b[i]);
 }
-
