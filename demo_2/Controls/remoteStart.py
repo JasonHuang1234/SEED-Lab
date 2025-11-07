@@ -16,7 +16,7 @@ def distandangle(input, command)
     with SMBus(1) as i2c:
         while True:
             try:
-                parts = user_input.split()
+                parts = input.split()
                 if len(parts) != 2:
                     print("Please enter exactly two values: distance and angle.")
                     continue
@@ -29,7 +29,7 @@ def distandangle(input, command)
                 dist_bytes = struct.pack('<f', target_dist)
                 ang_bytes = struct.pack('<f', target_ang)
                 send = bytes([cmd]) + dist_bytes + ang_bytes
-
+                # Added additional Command bit
                 # Send 8 bytes: 4 for distance, 4 for angle
                 msg = i2c_msg.write(ARD, send)
                 i2c.i2c_rdwr(msg)

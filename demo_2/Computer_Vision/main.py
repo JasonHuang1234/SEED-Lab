@@ -153,7 +153,7 @@ while True:
         if change:
             print("No markers found")
             change = 0
-    if abs(angle) <= 0.02:
+    if abs(angle) <= 0.02: #and direction is less than a given error
         #direction = detect_arrow_color(frame, marker_corners)
         print(f"direction is {direction}")
 
