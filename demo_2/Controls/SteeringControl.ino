@@ -164,7 +164,7 @@ void loop() {
 
     // Calculate applied voltage
     applied_voltage_rho[i] = constrain(Kp_vel[i]*( (desired_robot_vel / WHEEL_RADIUS) - actual_vel[i] ),-BATTERY_VOLTAGE,BATTERY_VOLTAGE);
-    applied_voltage_phi[i] = Kp_vel[i]*(desired_robot_omega * (WHEEL_BASE/(2*WHEEL_RADIUS));
+    applied_voltage_phi[i] = Kp_vel[i]*(desired_robot_omega * (WHEEL_BASE/(2*WHEEL_RADIUS)));
 
     // For odometry
     delta_M[i] = (wheel_rad[i] - prev_rad[i]) * WHEEL_RADIUS;
@@ -173,12 +173,12 @@ void loop() {
 
   // Calculate PWM signal 
   PWM[0] = constrain( (abs(applied_voltage_rho[0]-applied_voltage_phi[0]) / BATTERY_VOLTAGE) * 255, 0, 255);
-  PWM[1] = constrain( (abs(applied_voltage[1]+applied_voltage_phi[1]) / BATTERY_VOLTAGE) * 255, 0, 255);
+  PWM[1] = constrain( (abs(applied_voltage_rho[1]+applied_voltage_phi[1]) / BATTERY_VOLTAGE) * 255, 0, 255);
 
   // Set motor driver sign pins
   if ( (applied_voltage_rho[0]-applied_voltage_phi[0]) > 0) { digitalWrite(M1Voltage_Sign, HIGH); }  
   else { digitalWrite(M1Voltage_Sign, LOW); }
-  if ( (applied_voltage[1]+applied_voltage_phi[1]) > 0) { digitalWrite(M2Voltage_Sign, LOW); }  
+  if ( (applied_voltage_rho[1]+applied_voltage_phi[1]) > 0) { digitalWrite(M2Voltage_Sign, LOW); }  
   else { digitalWrite(M2Voltage_Sign, HIGH); }
 
   // Write PWM signals to motors
@@ -212,12 +212,6 @@ void loop() {
   Serial.print("\t");
   Serial.print("DV_R: ");
   Serial.print(desired_robot_vel);
-  Serial.print("\t");
-  Serial.print("AV_1: ");
-  Serial.print(applied_voltage[0]);
-  Serial.print("\t");
-  Serial.print("AV_2: ");
-  Serial.print(applied_voltage[2]);
   Serial.print("\t");
   Serial.print("X: ");
   Serial.print(robot_position[0]*3.28084);
