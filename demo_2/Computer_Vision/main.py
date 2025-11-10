@@ -15,7 +15,7 @@ import lcd_stuff
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import board
 from direction import detect_arrow_color
-#from remoteStart import distandangle
+from remoteStart import send_command
 
 with np.load('calibration_full.npz') as data:
     mtx = data['camera_matrix']
@@ -34,11 +34,11 @@ print(f"cs is {cx}")
 marker_length = 2
 
 #Initialize LCD
-i2c_lcd = board.I2C()
-lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
-lcd.clear()
-lcd.color = (50, 0, 50)
-time.sleep(1)
+#i2c_lcd = board.I2C()
+#lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
+#lcd.clear()
+#lcd.color = (50, 0, 50)
+#time.sleep(1)
 
 # Initialize camera
 cap = cv2.VideoCapture(0)
@@ -59,7 +59,7 @@ avg2 = 0
 sum = 0
 sum2 = 0
 distsum = 0
-avgtot = 20
+avgtot = 10
 angle = 10000
 dist = 1000
 
@@ -96,6 +96,7 @@ while True:
     corners, ids, _ = detector.detectMarkers(gray)
 
     if ids is not None:
+
         # Pick the lowest marker found
         marker_index = np.argmin(ids)
         marker_corners = corners[marker_index]
@@ -118,16 +119,22 @@ while True:
         toa = x_est/z
         angle = np.degrees(np.arctan(x))
         angle2 = np.degrees(np.arctan(toa))
+        # Figure out which is better
         sum += angle
         sum2 += angle2
         avg += 1
-        distsum += z
+        x_power = x_est*x_est
+        z_power = z*z
+        power_vals = x_power + z_power
+        aprox = np.sqrt(power_vals)
+        distsum += aprox
         if avg == avgtot:
             angle2 = sum2/avg
             angle = sum/avg
             angle = np.round(angle, 2)
-            angle = np.round(angle,2)
+            angle2 = np.round(angle2, 2)
             distance_val = distsum/avg
+            distance_val = distance_val - 13
             if np.round(angle,1) == np.round(prev_angle,1):
                 change = 0
             else:
@@ -137,12 +144,12 @@ while True:
 
         
             if (change):
-                print(f"angle 1 is {angle} \n")
-                print(f"angle 2 is {angle2} \n")
-                print(f"distance in inches from marker is {distance_val} \n")
-                myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
-                myThread.start()
-                arduinoinput = f"{angle} {distance_val}"
+                if not (abs(angle2) < 0.02 and abs(distance_val) < 4)
+                    print(f"angle 1 is {angle} \n")
+                    print(f"angle 2 is {angle2} \n")
+                    print(f"distance in inches from marker is {distance_val} \n")
+                    #Update ARGs
+                    remoteStart(angle2, distance_val, "control")
             sum = 0
             sum2 = 0
             avg = 0
@@ -152,9 +159,14 @@ while True:
     else:
         if change:
             print("No markers found")
+            send_command(0,0, "turn")
             change = 0
-    if abs(angle) <= 0.02: #and direction is less than a given error
+    if abs(angle2) < 0.02 and abs(distance_val) < 4: #and direction is less than a given error
         direction = detect_arrow_color(frame, marker_corners)
+        if direction == "left-green":
+            remoteStart(angle2, distance_val, "left")
+        elif direction == "right-red":
+            remoteStart(angle2, distance_val, "right")
         print(f"direction is {direction}")
 
 
