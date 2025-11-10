@@ -1,3 +1,9 @@
+// Remote Start header file
+// Primary developer: Kiera Crawford
+// Updated: 10/23/2025
+// Description: Header file to reduce size of main sketch
+// To use include in main sketch and
+
 #ifndef REMOTE_START_H
 #define REMOTE_START_H
 
