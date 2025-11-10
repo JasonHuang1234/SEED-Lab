@@ -20,20 +20,18 @@ const float WHEEL_RADIUS = 0.075;              // Wheel radius in meters
 const float WHEEL_BASE = 0.356;    // Distance between wheels in meters
 const int counts_per_rev = 3200; //number of encoder counts per full wheel revolution
 const float BATTERY_VOLTAGE = 7.8;
-const float ANGLE_TOLERANCE = 0.75 * (pi/180); // 0.75 degrees in radians
-const float DISTANCE_TOLERANCE = 1 * 0.0254; // 0.75 inches in meters
+const float ANGLE_TOLERANCE = 5 * (pi/180); // 5 degrees in radians
+const float DISTANCE_TOLERANCE = 2 * 0.0254; // 1 inch in meters
 
 float applied_voltage_rho[2] = {0,0}, applied_voltage_phi[2] = {0,0};
-float PWM[2];
+float PWM[2], desired_PWM[2];
 
 // Gain variables for proportional and PI controllers
 float Kp_vel[2] = {3,3.4};
-float Kp_rho = 2, Kp_phi = 2.5;
-float Ki_rho = 0, Ki_phi = 0.7;
+float Kp_rho = 1, Kp_phi = 2;
+float Ki_rho = 0.05, Ki_phi = 0.2;
 
 float actual_vel[2] = {0,0}; // Motor velocity in radians/sec
-float desired_vel[2] = {0,0}; // Desired motor velocity in radians/sec
-float vel_error[2]; // Radians
 
 float rho_error, rho_integral_error; // Meters
 float phi_error, act_phi_error, phi_integral_error; // Radians
@@ -53,7 +51,7 @@ float prev_rad[2] = {0,0}; // Previous wheel angles in radians
 float delta_M[2]; // Change in distance for each wheel
 
 // Time keeping variables
-unsigned long sample_time = 5; // desired sample time in milliseconds
+unsigned long sample_time = 3; // desired sample time in milliseconds
 unsigned long last_time_ms;
 unsigned long start_time_ms;
 float current_time;
@@ -99,8 +97,8 @@ void loop() {
 
   // Set desired position at 5 seconds for testing
   if (current_time >= 5) {
-    desired_pos_xy[0] = 4 * 0.3048;
-    desired_pos_xy[1] = 4 * 0.3048;
+    desired_pos_xy[0] = 6 * 0.3048;
+    desired_pos_xy[1] = 6 * 0.3048;
     // desired_phi = 2*pi;
   }
   
@@ -121,7 +119,7 @@ void loop() {
   act_phi_error = desired_phi - phi; // Actual error between current angle and desired angle
 
   // Calculate phi error based on minimum angle needed to turn and determine whether robot should drive forwards or backwards
-  if (act_phi_error >= (pi/2)) { 
+  if (act_phi_error > (pi/2)) { 
     direction = -1;
     phi_error = act_phi_error - pi;
   } else if (act_phi_error >= (-pi/2)) {
@@ -131,29 +129,23 @@ void loop() {
     direction = -1;
     phi_error = act_phi_error + pi;
   }
+  
   // Increment phi integral error
   phi_integral_error = constrain(phi_integral_error + phi_error*(sample_time/1000.0f),-1,1);
 
   // Calculate rho errors
   rho_error = sqrt( (x_error*x_error) + (y_error*y_error) ) * direction;
   rho_integral_error = constrain(rho_integral_error + rho_error*(sample_time/1000.0f),-1,1);
-
-  // If error is small, disable angle control
-  if (rho_error < DISTANCE_TOLERANCE) {
-    phi_error = 0;
-    phi_integral_error = 0;
-  }
   
   // Calculate the desired robot velocity and angular velocity via 2 PI controllers
   desired_robot_vel = Kp_rho*rho_error + Ki_rho*rho_integral_error;
   desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
 
-  /*
-  // If angle error is significant, only allow angle control
-  if ( ( abs(phi_error) > ANGLE_TOLERANCE ) ) {
+  // If error is small, disable motor control
+  if ( abs(rho_error) < DISTANCE_TOLERANCE && abs(actual_vel[0]) < 0.1 ) {
     desired_robot_vel = 0;
+    desired_robot_omega = 0;
   }
-  */
 
   for(int i=0;i<2;i++) {
     // Update motor positions
@@ -161,7 +153,6 @@ void loop() {
 
     // Calculate motor velocity
     actual_vel[i] = (wheel_rad[i] - prev_rad[i]) / (sample_time/1000.0f);
-    vel_error[i] = (desired_robot_vel / WHEEL_RADIUS) - actual_vel[i];
 
     // Calculate applied voltage
     applied_voltage_rho[i] = constrain(Kp_vel[i]*( (desired_robot_vel / WHEEL_RADIUS) - actual_vel[i] ),-BATTERY_VOLTAGE,BATTERY_VOLTAGE);
@@ -172,9 +163,13 @@ void loop() {
     prev_rad[i] = wheel_rad[i];
   }
 
-  // Calculate PWM signal 
-  PWM[0] = constrain( (abs(applied_voltage_rho[0]-applied_voltage_phi[0]) / BATTERY_VOLTAGE) * 255, 0, 255);
-  PWM[1] = constrain( (abs(applied_voltage_rho[1]+applied_voltage_phi[1]) / BATTERY_VOLTAGE) * 255, 0, 255);
+  // Calculate PWM signal
+  desired_PWM[0] = (abs(applied_voltage_rho[0]-applied_voltage_phi[0]) / BATTERY_VOLTAGE) * 255; // Find desired PWM signal
+  desired_PWM[1] = (abs(applied_voltage_rho[1]+applied_voltage_phi[1]) / BATTERY_VOLTAGE) * 255;
+  PWM[0] += constrain(desired_PWM[0] - PWM[0],-10,10); // Limit change in PWM to prevent slipping
+  PWM[1] += constrain(desired_PWM[1] - PWM[1],-10,10);
+  PWM[0] = constrain(PWM[0],0,255); // Clamp PWM from 0 to 255
+  PWM[1] = constrain(PWM[1],0,255);
 
   // Set motor driver sign pins
   if ( (applied_voltage_rho[0]-applied_voltage_phi[0]) > 0) { digitalWrite(M1Voltage_Sign, HIGH); }  
@@ -187,10 +182,20 @@ void loop() {
   analogWrite(M2PWM, PWM[1]);
 
   // Calculate robot movement
+  float delta_phi = (delta_M[1] - delta_M[0]) / WHEEL_BASE;
   float delta_center = (delta_M[0] + delta_M[1]) / 2.0;
-  phi += (delta_M[1] - delta_M[0]) / WHEEL_BASE;
-  robot_position[0] += cos(phi) * delta_center;
-  robot_position[1] += sin(phi) * delta_center;
+
+  if (abs(delta_phi) < 1e-6) {
+    // Approx straight line
+    robot_position[0] += delta_center * cos(phi);
+    robot_position[1] += delta_center * sin(phi);
+  } else {
+    // Arc motion correction
+    float R = delta_center / delta_phi; // instantaneous turn radius
+    robot_position[0] += R * (sin(phi + delta_phi) - sin(phi));
+    robot_position[1] -= R * (cos(phi + delta_phi) - cos(phi));
+  }
+  phi += delta_phi;
 
   // Normalize phi
   if (phi > pi) phi -= 2 * pi;
@@ -198,27 +203,6 @@ void loop() {
 
   while (millis()<last_time_ms + sample_time) {}// Wait until desired time passes to go top of the loop
   last_time_ms = millis(); // Update time
-
-  Serial.print("Time: ");
-  Serial.print(current_time);
-  Serial.print("\t");
-  Serial.print("P:   ");
-  Serial.print(phi*((float)180/pi));
-  Serial.print("\t");
-  Serial.print("R_E: ");
-  Serial.print(rho_error);
-  Serial.print("\t");
-  Serial.print("RIE: ");
-  Serial.print(rho_integral_error);
-  Serial.print("\t");
-  Serial.print("DV_R: ");
-  Serial.print(desired_robot_vel);
-  Serial.print("\t");
-  Serial.print("X: ");
-  Serial.print(robot_position[0]*3.28084);
-  Serial.print("\t");
-  Serial.print("Y: ");
-  Serial.println(robot_position[1]*3.28084);
 
 }
 
@@ -251,7 +235,7 @@ void onReceiveEvent(int numBytes) {
     received_rotation = rot.f;
     received = true;
   }
-  
+
   switch ((received_distance == 0.0 && received_rotation == 0.0) ? 0:1) {
     case 0: 
       spinning = true;
