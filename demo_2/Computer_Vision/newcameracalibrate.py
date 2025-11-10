@@ -54,9 +54,9 @@ aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 params = cv2.aruco.DetectorParameters()
 charuco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 board = cv2.aruco.CharucoBoard(
-    (10, 14),               # tuple of (squaresX, squaresY)
-    0.734375,               # squareLength
-    0.53125,                # markerLength
+    (7, 9),               # tuple of (squaresX, squaresY)
+    0.9375,               # squareLength
+    0.65625,                # markerLength
     charuco_dict
 )
        
@@ -95,10 +95,10 @@ retval, K, D, rvecs, tvecs = cv2.aruco.calibrateCameraCharuco(all_charuco_corner
 h, w = image.shape[:2]
 print("\nRMS reprojection error:", retval)
 newK, roi = cv2.getOptimalNewCameraMatrix(K, D,(w,h) , alpha=0)
-mapx, mapy = cv2.initUndistortRectifyMap(K, D, None, newK, (w, h), cv.CV_32FC1)
+mapx, mapy = cv2.initUndistortRectifyMap(K, D, None, newK, (w, h), cv2.CV_32FC1)
 np.savez("calibration_full.npz",
          camera_matrix=K,
-         dist_coeffs=D,
+         dist_coeff=D,
          mapx=mapx,
          mapy=mapy,
          newK=newK,

@@ -11,12 +11,22 @@ def detect_arrow_color(image, marker_corners):
     right_vec = ((tr + br) / 2) - center
 
     # Define box parameters
+    # Edit params
     offset = 50  # pixels from center
     box_size = 40  # box width/height
 
     def get_box(center, direction):
         point = center + direction / np.linalg.norm(direction) * offset
         x, y = int(point[0]), int(point[1])
+        # display sampled location
+        cv2.line(image, (int(center[0]), int(center[1])), (x, y), (255, 0, 0), 2)  # blue line
+        cv2.rectangle(
+            image,
+            (x - box_size//2, y - box_size//2),
+            (x + box_size//2, y + box_size//2),
+            (0, 255, 255),
+            2
+        )
         return image[y - box_size//2:y + box_size//2, x - box_size//2:x + box_size//2]
 
     left_box = get_box(center, left_vec)
@@ -36,6 +46,12 @@ def detect_arrow_color(image, marker_corners):
 
     left_color = check_color(left_box)
     right_color = check_color(right_box)
+
+# Find where im sampling
+    cv2.imshow("Sampling Visualization", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
 
     if left_color != "none":
         return f"left-{left_color}"

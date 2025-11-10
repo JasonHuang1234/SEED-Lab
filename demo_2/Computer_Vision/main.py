@@ -110,13 +110,11 @@ while True:
         rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(marker_corners,marker_length,newK,None)
         cv2.drawFrameAxes(frame,newK,dist,rvec,tvec,0.03)
         z = tvec[0][0][2]
-        x = tvec[0][0][0]
-
-
-        print(f"dist {z}")
+        x_est = tvec[0][0][0]
        # 3D geometric angle
+        toa = x_est/z
         angle = np.degrees(np.arctan(x))
-        angle2 = np.degrees()
+        angle2 = np.degrees(np.arctan(toa))
         sum += angle
         sum2 += angle2
         avg += 1
@@ -142,7 +140,6 @@ while True:
                 myThread = threading.Thread(target=lcd_stuff.LCD, args=(angle, lcd))
                 myThread.start()
                 arduinoinput = f"{angle} {distance_val}"
-                distandangle(arduinoinput)
             sum = 0
             sum2 = 0
             avg = 0
@@ -154,7 +151,7 @@ while True:
             print("No markers found")
             change = 0
     if abs(angle) <= 0.02: #and direction is less than a given error
-        #direction = detect_arrow_color(frame, marker_corners)
+        direction = detect_arrow_color(frame, marker_corners)
         print(f"direction is {direction}")
 
 
