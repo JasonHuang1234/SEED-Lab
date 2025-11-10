@@ -13,6 +13,7 @@
 float received_distance = 0.0;
 float received_rotation = 0.0;
 bool received = false;
+bool spinning = true;
 
 const float pi = 3.1415926538;      // pi with 8 decimal places
 const float WHEEL_RADIUS = 0.075;              // Wheel radius in meters
@@ -249,6 +250,23 @@ void onReceiveEvent(int numBytes) {
     received_distance = dist.f;
     received_rotation = rot.f;
     received = true;
+  }
+  
+  switch ((received_distance == 0.0 && received_rotation == 0.0) ? 0:1) {
+    case 0: 
+      spinning = true;
+      rho_error = 0;
+      phi_error = 0;
+      desired_robot_vel = 0;              // no forward motion
+      desired_robot_omega = 1.0;          // rad/s — adjust spin speed
+      break;
+    case 1:
+      spinning = false; 
+      rho_error = received_distance;
+      phi_error = received_rotation;
+      desired_robot_vel = Kp_rho*rho_error + Ki_rho*rho_integral_error;
+      desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
+      break;
   }
 }
 
