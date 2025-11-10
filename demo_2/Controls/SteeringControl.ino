@@ -13,7 +13,7 @@
 float received_distance = 0.0;
 float received_rotation = 0.0;
 bool received = false;
-bool spinning = true;
+//bool spinning = true;
 
 const float pi = 3.1415926538;      // pi with 8 decimal places
 const float WHEEL_RADIUS = 0.075;              // Wheel radius in meters
@@ -227,29 +227,50 @@ void M2Enc_Update() { // Interrupt function for motor 2's encoder
 }
 
 void onReceiveEvent(int numBytes) {
-  if (numBytes >= 8) {
+  if (numBytes >= 9) {
     union { byte b[4]; float f; } dist, rot;
-    for (int i = 0; i < 4; i++) dist.b[i] = Wire.read();
-    for (int i = 0; i < 4; i++) rot.b[i] = Wire.read();
+    if (Wire.available()) {
+      command = Wire.read();
+    }
+    for (int i = 0; i < 4; i++) {
+      if (Wire.available()) dist.b[i] = Wire.read();
+    }
+    for (int i = 0; i < 4; i++) {
+      if (Wire.available()) rot.b[i] = Wire.read();
+    }    
     received_distance = dist.f;
     received_rotation = rot.f;
     received = true;
   }
 
-  switch ((received_distance == 0.0 && received_rotation == 0.0) ? 0:1) {
+  switch (command) {
     case 0: 
-      spinning = true;
+      //spinning = true;
       rho_error = 0;
       phi_error = 0;
       desired_robot_vel = 0;              // no forward motion
       desired_robot_omega = 1.0;          // rad/s — adjust spin speed
       break;
     case 1:
-      spinning = false; 
+      //spinning = false; 
       rho_error = received_distance;
       phi_error = received_rotation;
       desired_robot_vel = Kp_rho*rho_error + Ki_rho*rho_integral_error;
       desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
+      break;
+    case 2:
+      //90 degree left turn
+      rho_error = 0;
+      phi_error = pi/2;
+      desired_robot_vel = 0;              // no forward motion
+      desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
+      break;
+    case 3:
+      //90 degree right turn
+      rho_error = 0;
+      phi_error = -pi/2;
+      desired_robot_vel = 0;              // no forward motion
+      desired_robot_omega = Kp_phi*phi_error;
       break;
   }
 }
