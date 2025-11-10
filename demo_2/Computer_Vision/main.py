@@ -60,6 +60,9 @@ sum = 0
 sum2 = 0
 distsum = 0
 avgtot = 20
+angle = 10000
+dist = 1000
+
 
 while True:
     # Check if the camera frame was successful

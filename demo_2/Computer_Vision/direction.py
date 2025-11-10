@@ -12,8 +12,8 @@ def detect_arrow_color(image, marker_corners):
 
     # Define box parameters
     # Edit params
-    offset = 50  # pixels from center
-    box_size = 40  # box width/height
+    offset = 75  # pixels from center
+    box_size = 50  # box width/height
 
     def get_box(center, direction):
         point = center + direction / np.linalg.norm(direction) * offset
