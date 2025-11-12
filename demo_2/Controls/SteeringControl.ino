@@ -13,6 +13,7 @@
 float received_distance = 0.0;
 float received_rotation = 0.0;
 bool received = false;
+byte command = 0;
 //bool spinning = true;
 
 const float pi = 3.1415926538;      // pi with 8 decimal places
