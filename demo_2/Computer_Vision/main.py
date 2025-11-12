@@ -62,6 +62,7 @@ avgtot = 5
 angle = 10000
 dist = 1000
 turning = 0
+firstfind = 0
 
 
 while True:
@@ -95,7 +96,9 @@ while True:
     # Detect markers
     corners, ids, _ = detector.detectMarkers(gray)
 
-    if ids is not None and turning = 0:
+    if ids is not None and turning == 0:
+        if firstfind == 0:
+            send_command(0, 0, "stop")
 
         # Pick the lowest marker found
         marker_index = np.argmin(ids)
@@ -162,6 +165,7 @@ while True:
             send_command(0,0, "turn")
             change = 0
     if abs(angle) < 0.02 and abs(distance_val) < 4: #and direction is less than a given error
+        send_command(0, 0, "stop")
         direction = detect_arrow_color(frame, marker_corners)
         if direction is not None:
             turning = 1
