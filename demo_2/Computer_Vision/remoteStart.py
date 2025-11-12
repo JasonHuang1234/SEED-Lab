@@ -57,4 +57,4 @@ def send_command(distance, angle, command_name):
             print("I2C communication error. Check Arduino connection or power.")
 
     # Small delay for I2C stability
-    sleep(0.05)
+    sleep(0.005)

@@ -3,6 +3,7 @@
 // Updated: 10/22/2025
 // Description: This is a helper file that just does the comms part of Arduino tasks
 // This is a comms testing file but the code can be copied to match functionalty in main sketch
+// Out of date: stop and control command conbined in main sketch and python
 
 #include <Wire.h>
 

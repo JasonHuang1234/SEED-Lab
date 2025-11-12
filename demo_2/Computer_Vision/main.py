@@ -163,9 +163,9 @@ while True:
     if abs(angle) < 0.02 and abs(distance_val) < 4: #and direction is less than a given error
         direction = detect_arrow_color(frame, marker_corners)
         if direction == "left-green":
-            send_command(angle, distance_val, "left")
+            send_command(90, 0, "left")
         elif direction == "right-red":
-            remoteStart(angle, distance_val, "right")
+            remoteStart(-90, 0, "right")
         print(f"direction is {direction}")
 
 
