@@ -268,8 +268,8 @@ void onReceiveEvent(int numBytes) {
       robot_position[0] = 0;
       robot_position[1] = 0;
       phi = 0;
-      desired_pos_xy[0] = cos(received_rotation)/received_distance;
-      desired_pos_xy[1] = sin(received_rotation)/received_distance;
+      desired_pos_xy[0] = cos(received_rotation)*received_distance;
+      desired_pos_xy[1] = sin(received_rotation)*received_distance;
       break;
     case 3:
       //90 degree left turn
