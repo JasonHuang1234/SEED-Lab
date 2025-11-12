@@ -247,6 +247,7 @@ void onReceiveEvent(int numBytes) {
 
   switch (command) {
     case 0: 
+      // Continuious rotation
       spinning = true;
       turning = false;
       robot_position[0] = 0;
@@ -254,6 +255,7 @@ void onReceiveEvent(int numBytes) {
       phi = 0;
       break;
     case 1:
+      // Stop
       spinning = false;
       turning = false;
       robot_position[0] = 0;
@@ -263,6 +265,7 @@ void onReceiveEvent(int numBytes) {
       desired_pos_xy[1] = 0;
       break;
     case 2:
+      // Pi control
       spinning = false;
       turning = false;
       robot_position[0] = 0;
