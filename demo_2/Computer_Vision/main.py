@@ -149,7 +149,7 @@ while True:
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
                     #Update ARGs
-                    send_command(angle, distance_val, "control")
+                    send_command(distance_val,angle, "control")
             sum = 0
             sum2 = 0
             avg = 0
@@ -166,9 +166,9 @@ while True:
         if direction is not None:
             turning = 1
             if direction == "left-green":
-                send_command(90, 0, "left")
+                send_command(0, 90, "left")
             elif direction == "right-red":
-                remoteStart(-90, 0, "right")
+                remoteStart(0, -90, "right")
             print(f"direction is {direction}")
 
 
