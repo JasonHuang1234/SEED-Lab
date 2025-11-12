@@ -61,6 +61,7 @@ distsum = 0
 avgtot = 5
 angle = 10000
 dist = 1000
+turning = 0
 
 
 while True:
@@ -94,7 +95,7 @@ while True:
     # Detect markers
     corners, ids, _ = detector.detectMarkers(gray)
 
-    if ids is not None:
+    if ids is not None and turning = 0:
 
         # Pick the lowest marker found
         marker_index = np.argmin(ids)
@@ -155,18 +156,20 @@ while True:
             distsum = 0
     
     # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
-    else:
+    elif turning == 0:
         if change:
             print("No markers found")
             send_command(0,0, "turn")
             change = 0
     if abs(angle) < 0.02 and abs(distance_val) < 4: #and direction is less than a given error
         direction = detect_arrow_color(frame, marker_corners)
-        if direction == "left-green":
-            send_command(90, 0, "left")
-        elif direction == "right-red":
-            remoteStart(-90, 0, "right")
-        print(f"direction is {direction}")
+        if direction is not None:
+            turning = 1
+            if direction == "left-green":
+                send_command(90, 0, "left")
+            elif direction == "right-red":
+                remoteStart(-90, 0, "right")
+            print(f"direction is {direction}")
 
 
 
