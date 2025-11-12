@@ -14,9 +14,10 @@ ARD = 0x08
 # Command byte meanings (must match Arduino)
 COMMANDS = {
     "turn": 0x00,
-    "control": 0x01,
-    "left": 0x02,
-    "right": 0x03
+    "stop": 0x01,
+    "control": 0x02,
+    "left": 0x03,
+    "right": 0x04
 }
 
 def send_command(distance, angle, command_name):
