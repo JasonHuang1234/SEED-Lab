@@ -13,8 +13,9 @@
 float received_distance = 0.0;
 float received_rotation = 0.0;
 bool received = false;
-byte command = 0;
-//bool spinning = true;
+byte command = 0; 
+bool turning = false;
+bool spinning = true;
 
 const float pi = 3.1415926538;      // pi with 8 decimal places
 const float WHEEL_RADIUS = 0.075;              // Wheel radius in meters
@@ -95,7 +96,6 @@ void setup() {
 void loop() {
 
   current_time = (float)(last_time_ms-start_time_ms)/1000; // Update current time
-
   /*
   // Set desired position at 5 seconds for testing
   if (current_time >= 5) {
@@ -103,7 +103,7 @@ void loop() {
     desired_pos_xy[1] = 6 * 0.3048;
     // desired_phi = 2*pi;
   }
-  */
+    */
   
   if (received) {
     Serial.print("Received Distance (ft): ");
@@ -113,7 +113,6 @@ void loop() {
     received = false;
   }
 
-  /*
   // Find desired robot distance and angle
   x_error = desired_pos_xy[0] - robot_position[0];
   y_error = desired_pos_xy[1] - robot_position[1];
@@ -133,7 +132,16 @@ void loop() {
     direction = -1;
     phi_error = act_phi_error + pi;
   }
+
+  if (spinning) {
+    
+  }
   
+  if(turning){
+    rho_error = 0;
+    spinnng = false;
+  }
+
   // Increment phi integral error
   phi_integral_error = constrain(phi_integral_error + phi_error*(sample_time/1000.0f),-1,1);
 
@@ -150,7 +158,6 @@ void loop() {
     desired_robot_vel = 0;
     desired_robot_omega = 0;
   }
-  */
 
   for(int i=0;i<2;i++) {
     // Update motor positions
@@ -250,21 +257,31 @@ void onReceiveEvent(int numBytes) {
 
   switch (command) {
     case 0: 
-      //spinning = true;
+      spinning = true;
+      robot_position[0] = 0;
+      robot_position[1] = 0;
+      phi = 0;
       rho_error = 0;
       phi_error = 0;
       desired_robot_vel = 0;              // no forward motion
       desired_robot_omega = 1.0;          // rad/s — adjust spin speed
       break;
     case 1:
-      //spinning = false; 
-      rho_error = received_distance;
-      phi_error = received_rotation;
+      spinning = false; 
+      robot_position[0] = 0;
+      robot_position[1] = 0;
+      phi = 0;
+      desired_pos_xy[0] = cos(received_rotation)/received_distance;
+      desired_pos_xy[1] = sin(received_rotation)/received_distance;
       desired_robot_vel = Kp_rho*rho_error + Ki_rho*rho_integral_error;
       desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
       break;
     case 2:
       //90 degree left turn
+      turning = true;      
+      robot_position[0] = 0;
+      robot_position[1] = 0;
+      phi = 0;
       rho_error = 0;
       phi_error = pi/2;
       desired_robot_vel = 0;              // no forward motion
@@ -272,6 +289,10 @@ void onReceiveEvent(int numBytes) {
       break;
     case 3:
       //90 degree right turn
+      robot_position[0] = 0;
+      robot_position[1] = 0;
+      phi = 0;
+      turning = true;
       rho_error = 0;
       phi_error = -pi/2;
       desired_robot_vel = 0;              // no forward motion
