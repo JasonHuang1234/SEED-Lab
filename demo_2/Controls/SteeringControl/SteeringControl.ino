@@ -13,9 +13,8 @@
 float received_distance = 0.0;
 float received_rotation = 0.0;
 bool received = false;
-byte command = 0; 
-bool turning = false;
-bool spinning = true;
+//bool spinning = true;
+byte command = 0;
 
 const float pi = 3.1415926538;      // pi with 8 decimal places
 const float WHEEL_RADIUS = 0.075;              // Wheel radius in meters
@@ -96,6 +95,15 @@ void setup() {
 void loop() {
 
   current_time = (float)(last_time_ms-start_time_ms)/1000; // Update current time
+
+  /*
+  // Set desired position at 5 seconds for testing
+  if (current_time >= 5) {
+    desired_pos_xy[0] = 6 * 0.3048;
+    desired_pos_xy[1] = 6 * 0.3048;
+    // desired_phi = 2*pi;
+  }
+  */
   
   if (received) {
     Serial.print("Received Distance (ft): ");
@@ -105,43 +113,38 @@ void loop() {
     received = false;
   }
 
-  if (spinning) {
-    desired_robot_omega = 1;
-    desired_robot_vel = 0;
-  } else if (turning) {
-    phi_error = desired_phi - phi;
-    phi_integral_error = constrain(phi_integral_error + phi_error*(sample_time/1000.0f),-1,1);
-    desired_robot_vel = 0;
-    desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
-  } else {
-    // Find desired robot distance and angle
-    x_error = desired_pos_xy[0] - robot_position[0];
-    y_error = desired_pos_xy[1] - robot_position[1];
-    // Calculate robot angle error
-    desired_phi = atan2(y_error,x_error);
-    act_phi_error = desired_phi - phi; // Actual error between current angle and desired angle
-    // Calculate phi error based on minimum angle needed to turn and determine whether robot should drive forwards or backwards
-    if (act_phi_error > (pi/2)) { 
-      direction = -1;
-      phi_error = act_phi_error - pi;
-    } else if (act_phi_error >= (-pi/2)) {
-      direction = 1;
-      phi_error = act_phi_error;
-    } else if (act_phi_error < (-pi/2)) {
-      direction = -1;
-      phi_error = act_phi_error + pi;
-    }
-    // Increment phi integral error
-    phi_integral_error = constrain(phi_integral_error + phi_error*(sample_time/1000.0f),-1,1);
-    // Calculate rho errors
-    rho_error = sqrt( (x_error*x_error) + (y_error*y_error) ) * direction;
-    rho_integral_error = constrain(rho_integral_error + rho_error*(sample_time/1000.0f),-1,1);
-    // Calculate the desired robot velocity and angular velocity via 2 PI controllers
-    desired_robot_vel = Kp_rho*rho_error + Ki_rho*rho_integral_error;
-    desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
-  }
-
   /*
+  // Find desired robot distance and angle
+  x_error = desired_pos_xy[0] - robot_position[0];
+  y_error = desired_pos_xy[1] - robot_position[1];
+
+  // Calculate robot angle error
+  desired_phi = atan2(y_error,x_error);
+  act_phi_error = desired_phi - phi; // Actual error between current angle and desired angle
+
+  // Calculate phi error based on minimum angle needed to turn and determine whether robot should drive forwards or backwards
+  if (act_phi_error > (pi/2)) { 
+    direction = -1;
+    phi_error = act_phi_error - pi;
+  } else if (act_phi_error >= (-pi/2)) {
+    direction = 1;
+    phi_error = act_phi_error;
+  } else if (act_phi_error < (-pi/2)) {
+    direction = -1;
+    phi_error = act_phi_error + pi;
+  }
+  
+  // Increment phi integral error
+  phi_integral_error = constrain(phi_integral_error + phi_error*(sample_time/1000.0f),-1,1);
+
+  // Calculate rho errors
+  rho_error = sqrt( (x_error*x_error) + (y_error*y_error) ) * direction;
+  rho_integral_error = constrain(rho_integral_error + rho_error*(sample_time/1000.0f),-1,1);
+  
+  // Calculate the desired robot velocity and angular velocity via 2 PI controllers
+  desired_robot_vel = Kp_rho*rho_error + Ki_rho*rho_integral_error;
+  desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
+
   // If error is small, disable motor control
   if ( abs(rho_error) < DISTANCE_TOLERANCE && abs(actual_vel[0]) < 0.1 ) {
     desired_robot_vel = 0;
@@ -247,38 +250,32 @@ void onReceiveEvent(int numBytes) {
 
   switch (command) {
     case 0: 
-      spinning = true;
-      turning = false;
-      robot_position[0] = 0;
-      robot_position[1] = 0;
-      phi = 0;
+      //spinning = true;
+      rho_error = 0;
+      phi_error = 0;
+      desired_robot_vel = 0;              // no forward motion
+      desired_robot_omega = 1.0;          // rad/s — adjust spin speed
       break;
     case 1:
-      spinning = false;
-      turning = false;
-      robot_position[0] = 0;
-      robot_position[1] = 0;
-      phi = 0;
-      desired_pos_xy[0] = cos(received_rotation)/received_distance;
-      desired_pos_xy[1] = sin(received_rotation)/received_distance;
+      //spinning = false; 
+      rho_error = received_distance;
+      phi_error = received_rotation;
+      desired_robot_vel = Kp_rho*rho_error + Ki_rho*rho_integral_error;
+      desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
       break;
     case 2:
       //90 degree left turn
-      turning = true;
-      spinning = false;      
-      robot_position[0] = 0;
-      robot_position[1] = 0;
-      phi = 0;
-      desired_phi = -pi/2;
+      rho_error = 0;
+      phi_error = pi/2;
+      desired_robot_vel = 0;              // no forward motion
+      desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
       break;
     case 3:
       //90 degree right turn
-      turning = true;
-      spinning = false;
-      robot_position[0] = 0;
-      robot_position[1] = 0;
-      phi = 0;
-      desired_phi = pi/2;
+      rho_error = 0;
+      phi_error = -pi/2;
+      desired_robot_vel = 0;              // no forward motion
+      desired_robot_omega = Kp_phi*phi_error;
       break;
   }
 }
