@@ -30,8 +30,8 @@ float PWM[2], desired_PWM[2];
 
 // Gain variables for proportional and PI controllers
 float Kp_vel[2] = {3,3.4};
-float Kp_rho = 1, Kp_phi = 2;
-float Ki_rho = 0.05, Ki_phi = 0.2;
+float Kp_rho = 1.5, Kp_phi = 2;
+float Ki_rho = 0.05, Ki_phi = 0.1;
 
 float actual_vel[2] = {0,0}; // Motor velocity in radians/sec
 
@@ -98,15 +98,17 @@ void loop() {
   current_time = (float)(last_time_ms-start_time_ms)/1000; // Update current time
   
   if (received) {
-    Serial.print("Received Distance (ft): ");
-    Serial.print(received_distance, 2);
+    Serial.print("Command: ");
+    Serial.print(command);
+    Serial.print("| Received Distance (m): ");
+    Serial.print(received_distance*0.0254, 2);
     Serial.print(" | Rotation (deg): ");
     Serial.println(received_rotation, 2);
     received = false;
   }
 
   if (spinning) {
-    desired_robot_omega = 1;
+    desired_robot_omega = 0.6;
     desired_robot_vel = 0;
   } else if (turning) {
     phi_error = desired_phi - phi;
@@ -268,8 +270,8 @@ void onReceiveEvent(int numBytes) {
       robot_position[0] = 0;
       robot_position[1] = 0;
       phi = 0;
-      desired_pos_xy[0] = cos(received_rotation)*received_distance;
-      desired_pos_xy[1] = sin(received_rotation)*received_distance;
+      desired_pos_xy[0] = cos(received_rotation*(pi/180))*(received_distance*(0.0254));
+      desired_pos_xy[1] = sin(received_rotation*(pi/180))*(received_distance*(0.0254));
       break;
     case 3:
       //90 degree left turn
