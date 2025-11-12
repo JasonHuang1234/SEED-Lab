@@ -58,7 +58,7 @@ avg2 = 0
 sum = 0
 sum2 = 0
 distsum = 0
-avgtot = 10
+avgtot = 5
 angle = 10000
 dist = 1000
 
@@ -143,12 +143,12 @@ while True:
 
         
             if (change):
-                if not (abs(angle2) < 0.02 and abs(distance_val) < 4):
+                if not (abs(angle) < 0.02 and abs(distance_val) < 4):
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
                     #Update ARGs
-                    send_command(angle2, distance_val, "control")
+                    send_command(angle, distance_val, "control")
             sum = 0
             sum2 = 0
             avg = 0
@@ -160,12 +160,12 @@ while True:
             print("No markers found")
             send_command(0,0, "turn")
             change = 0
-    if abs(angle2) < 0.02 and abs(distance_val) < 4: #and direction is less than a given error
+    if abs(angle) < 0.02 and abs(distance_val) < 4: #and direction is less than a given error
         direction = detect_arrow_color(frame, marker_corners)
         if direction == "left-green":
-            send_command(angle2, distance_val, "left")
+            send_command(angle, distance_val, "left")
         elif direction == "right-red":
-            remoteStart(angle2, distance_val, "right")
+            remoteStart(angle, distance_val, "right")
         print(f"direction is {direction}")
 
 

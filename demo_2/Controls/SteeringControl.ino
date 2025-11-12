@@ -96,12 +96,14 @@ void loop() {
 
   current_time = (float)(last_time_ms-start_time_ms)/1000; // Update current time
 
+  /*
   // Set desired position at 5 seconds for testing
   if (current_time >= 5) {
     desired_pos_xy[0] = 6 * 0.3048;
     desired_pos_xy[1] = 6 * 0.3048;
     // desired_phi = 2*pi;
   }
+  */
   
   if (received) {
     Serial.print("Received Distance (ft): ");
@@ -111,6 +113,7 @@ void loop() {
     received = false;
   }
 
+  /*
   // Find desired robot distance and angle
   x_error = desired_pos_xy[0] - robot_position[0];
   y_error = desired_pos_xy[1] - robot_position[1];
@@ -147,6 +150,7 @@ void loop() {
     desired_robot_vel = 0;
     desired_robot_omega = 0;
   }
+  */
 
   for(int i=0;i<2;i++) {
     // Update motor positions
