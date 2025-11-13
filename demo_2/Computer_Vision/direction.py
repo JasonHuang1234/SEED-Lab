@@ -44,8 +44,8 @@ def detect_arrow_color(image, marker_corners):
 # Find where im sampling
 
     if left_color is not None:
-        return f"{left_color}"
+        return left_color
     elif right_color is not None:
-        return f"{right_color}"
+        return right_color
     else:
         return None
