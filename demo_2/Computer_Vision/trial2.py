@@ -61,7 +61,6 @@ distsum = 0
 avgtot = 1
 angle = 10000
 dist = 1000
-turning = 0
 firstfind = 1
 done = 0
 
@@ -165,20 +164,18 @@ while True:
         if change and firstfind == 0:
             print("No markers found")
             send_command(0,0, "turn")
-    if abs(angle) < 0.5 and abs(distance_val) < 4: #and direction is less than a given error
+    if abs(angle) < 0.5 and abs(distance_val) < 4 and done = 0: #and direction is less than a given error
         send_command(0, 0, "stop")
         time.sleep(0.5)
         direction = detect_arrow_color(frame, marker_corners)
         if direction is not None:
             if direction == "green":
-                turning = 1
                 send_command(0, 0, "left")
             elif direction == "red":
-                turning = 1
                 send_command(0, 0, "right")
             else:
-                turning = 0
                 send_command(0, 0, "stop")
+                time.sleep(1)
                 done = 0
                 break
             print(f"direction is {direction}")
