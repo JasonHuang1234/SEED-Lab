@@ -203,5 +203,3 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 time.sleep(2)
-lcd.clear()
-lcd.color = (0,0,0)
