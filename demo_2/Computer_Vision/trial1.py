@@ -174,9 +174,9 @@ while True:
             if direction == "green":
                 send_command(0, 0, "stop")
             elif direction == "red":
-                remoteStart(0, 0, "stop")
+                send_command(0, 0, "stop")
             else:
-                remoteStart(0,0, "stop")
+                send_command(0,0, "stop")
             print(f"direction is {direction}")
             direction = None
             time.sleep(5)
