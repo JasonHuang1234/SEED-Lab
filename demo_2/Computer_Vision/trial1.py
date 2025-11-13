@@ -63,7 +63,7 @@ angle = 10000
 dist = 1000
 turning = 0
 firstfind = 1
-
+done = 0
 
 while True:
     # Check if the camera frame was successful
@@ -140,7 +140,7 @@ while True:
             angle = np.round(angle, 2)
             angle2 = np.round(angle2, 2)
             distance_val = distsum/avg
-            distance_val = distance_val - 13
+            distance_val = distance_val - 9
             if np.round(angle,1) == np.round(prev_angle,1):
                 change = 0
             else:
@@ -150,7 +150,7 @@ while True:
 
         
             if (change):
-                if not (abs(angle) < 0.02 and abs(distance_val) < 4) and abs(angle):
+                if not (abs(angle) < 0.02 and abs(distance_val) < 4) and abs(angle) and done == 0:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
@@ -163,7 +163,7 @@ while True:
     
     # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
     else:
-        if change and firstfind == 1:
+        if change and firstfind == 0:
             print("No markers found")
             send_command(0,0, "turn")
     if abs(angle) < 0.5 and abs(distance_val) < 4: #and direction is less than a given error
@@ -180,6 +180,8 @@ while True:
                 remoteStart(0,0, "stop")
             print(f"direction is {direction}")
             direction = None
+            time.sleep(5)
+            done = 1
 
 
 
