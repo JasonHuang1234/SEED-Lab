@@ -61,7 +61,6 @@ distsum = 0
 avgtot = 1
 angle = 10000
 dist = 1000
-turning = 0
 firstfind = 1
 done = 0
 
@@ -170,18 +169,19 @@ while True:
         time.sleep(0.5)
         direction = detect_arrow_color(frame, marker_corners)
         if direction is not None:
-            turning = 1
             if direction == "green":
                 send_command(0, 0, "stop")
             elif direction == "red":
                 send_command(0, 0, "stop")
             else:
-                send_command(0,0, "stop")
+                send_command(0, 0, "stop")
+                time.sleep(1)
                 done = 0
                 break
             print(f"direction is {direction}")
             direction = None
             time.sleep(5)
+            send_command(0,0, "stop")
             done = 1
 
 
