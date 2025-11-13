@@ -170,9 +170,13 @@ while True:
         direction = detect_arrow_color(frame, marker_corners)
         if direction is not None:
             if direction == "green":
-                send_command(0, 0, "left")
+                k = cv2.waitKey(1) & 0xFF
+                if k == ord("g"):
+                    send_command(0, 0, "left")
             elif direction == "red":
-                send_command(0, 0, "right")
+                k = cv2.waitKey(1) & 0xFF
+                if k == ord("g"):
+                    send_command(0, 0, "right")
             else:
                 send_command(0, 0, "stop")
                 time.sleep(1)
