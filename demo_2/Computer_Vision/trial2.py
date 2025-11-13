@@ -175,15 +175,16 @@ while True:
                 send_command(0, 0, "left")
             elif direction == "red":
                 turning = 1
-                remoteStart(0, 0, "right")
+                send_command(0, 0, "right")
             else:
                 turning = 0
-                remoteStart(0,0, "stop")
+                send_command(0, 0, "stop")
                 done = 0
                 break
             print(f"direction is {direction}")
             direction = None
             time.sleep(5)
+            send_command(0,0, "stop")
             done = 1
 
 
