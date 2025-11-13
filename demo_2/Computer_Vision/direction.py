@@ -19,14 +19,6 @@ def detect_arrow_color(image, marker_corners):
         point = center + direction / np.linalg.norm(direction) * offset
         x, y = int(point[0]), int(point[1])
         # display sampled location
-        cv2.line(image, (int(center[0]), int(center[1])), (x, y), (255, 0, 0), 2)  # blue line
-        cv2.rectangle(
-            image,
-            (x - box_size//2, y - box_size//2),
-            (x + box_size//2, y + box_size//2),
-            (0, 255, 255),
-            2
-        )
         return image[y - box_size//2:y + box_size//2, x - box_size//2:x + box_size//2]
 
     left_box = get_box(center, left_vec)
@@ -34,7 +26,9 @@ def detect_arrow_color(image, marker_corners):
 
     def check_color(region):
         hsv = cv2.cvtColor(region, cv2.COLOR_BGR2HSV)
-        red_mask = cv2.inRange(hsv, (0, 70, 50), (10, 255, 255)) + cv2.inRange(hsv, (170, 70, 50), (180, 255, 255))
+        lower = cv2.inRange(hsv, (0, 70, 50), (10, 255, 255))
+        upper = cv2.inRange(hsv, (170, 70, 50), (180, 255, 255))
+        red_mask =  cv2.bitwise_or(lower, upper)
         green_mask = cv2.inRange(hsv, (40, 70, 50), (80, 255, 255))
         red_count = cv2.countNonZero(red_mask)
         green_count = cv2.countNonZero(green_mask)
@@ -42,20 +36,16 @@ def detect_arrow_color(image, marker_corners):
             return "red"
         elif green_count > red_count and green_count > 30:
             return "green"
-        return "none"
+        return None
 
     left_color = check_color(left_box)
     right_color = check_color(right_box)
 
 # Find where im sampling
-    cv2.imshow("Sampling Visualization", image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
-
-    if left_color != "none":
-        return f"left-{left_color}"
-    elif right_color != "none":
-        return f"right-{right_color}"
+    if left_color is not None:
+        return f"{left_color}"
+    elif right_color is not None:
+        return f"{right_color}"
     else:
-        return "none"
+        return None

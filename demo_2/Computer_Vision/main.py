@@ -58,13 +58,14 @@ avg2 = 0
 sum = 0
 sum2 = 0
 distsum = 0
-avgtot = 5
-angle = 10000
-dist = 1000
+avgtot = 7
+angle = 0
+dist = 0
 turning = 0
 firstfind = 0
-
-
+found = 0
+distance_val = 10
+direct = 1
 while True:
     # Check if the camera frame was successful
     # If unsuccessful throws error and retries
@@ -96,10 +97,11 @@ while True:
     # Detect markers
     corners, ids, _ = detector.detectMarkers(gray)
 
-    if ids is not None and turning == 0:
+    if ids is not None:
         if firstfind == 0:
+            firstfind = 1
             send_command(0, 0, "stop")
-
+        found = 1
         # Pick the lowest marker found
         marker_index = np.argmin(ids)
         marker_corners = corners[marker_index]
@@ -137,17 +139,15 @@ while True:
             angle = np.round(angle, 2)
             angle2 = np.round(angle2, 2)
             distance_val = distsum/avg
-            distance_val = distance_val - 13
+            distance_val = distance_val - 9
             if np.round(angle,1) == np.round(prev_angle,1):
                 change = 0
             else:
                 change = 1
             prev_angle = angle
-
-
         
             if (change):
-                if not (abs(angle) < 0.02 and abs(distance_val) < 4):
+                if not (abs(angle) < 0.02 and abs(distance_val) < 4 and abs(angle) < 3):
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
@@ -159,22 +159,29 @@ while True:
             distsum = 0
     
     # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
-    elif turning == 0:
+    elif found == 0:
+        found = 1
         if change:
             print("No markers found")
             send_command(0,0, "turn")
             change = 0
-    if abs(angle) < 0.02 and abs(distance_val) < 4: #and direction is less than a given error
+    if abs(angle) < 0.5 and abs(distance_val) < 4: #and direction is less than a given error
         send_command(0, 0, "stop")
         direction = detect_arrow_color(frame, marker_corners)
         if direction is not None:
             turning = 1
-            if direction == "left-green":
-                send_command(0, 90, "left")
-            elif direction == "right-red":
-                remoteStart(0, -90, "right")
-            print(f"direction is {direction}")
+            print("direction")
 
+            if direction == "green":
+                distance_val = 10
+                send_command(0, 90, "left")
+            elif direction == "red":
+                distance_val = 10
+                send_command(0, -90, "right")
+            print(f"direction is {direction}")
+            direction =  None
+            time.sleep(5)
+            direct = 0
 
 
     # Show frame with markers
