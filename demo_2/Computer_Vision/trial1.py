@@ -58,7 +58,7 @@ avg2 = 0
 sum = 0
 sum2 = 0
 distsum = 0
-avgtot = 5
+avgtot = 1
 angle = 10000
 dist = 1000
 turning = 0
@@ -97,10 +97,6 @@ while True:
     corners, ids, _ = detector.detectMarkers(gray)
 
     if ids is not None:
-        if firstfind == 0:
-            send_command(0, 0, "stop")
-            firstfind = 1
-            time.sleep(0.5)
 
 
         # Pick the lowest marker found
@@ -146,11 +142,14 @@ while True:
             else:
                 change = 1
             prev_angle = angle
-
+            if firstfind == 0 and abs(angle < 4):
+                send_command(0, 0, "stop")
+                firstfind = 1
+                time.sleep(0.5)
 
         
             if (change):
-                if not (abs(angle) < 0.02 and abs(distance_val) < 4) and abs(angle) and done == 0:
+                if not (abs(angle) < 0.02 and abs(distance_val) < 4) and abs(angle) < 4 and done == 0:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
