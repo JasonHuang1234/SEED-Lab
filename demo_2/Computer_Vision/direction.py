@@ -12,7 +12,7 @@ def detect_arrow_color(image, marker_corners):
 
     # Define box parameters
     # Edit params
-    offset = 75  # pixels from center
+    offset = 100  # pixels from center
     box_size = 50  # box width/height
 
     def get_box(center, direction):
