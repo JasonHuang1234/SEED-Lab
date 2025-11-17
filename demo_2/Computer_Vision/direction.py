@@ -1,3 +1,9 @@
+# Arrow Direction
+# Primary developer: Kiera and Jason
+# 10/30/2025
+# Description: Determines direction to turn based on arrow next to Aruco marker.
+# Uses color of the arrow.
+
 import cv2
 import numpy as np
 
