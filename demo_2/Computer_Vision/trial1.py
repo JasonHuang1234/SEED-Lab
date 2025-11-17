@@ -1,10 +1,7 @@
-# Main function
+# Trial 1 Function
 # Primary developer: Kiera and Jason
-# 9/26/2025
-# Description: This function detects an Aruco Marker based on its dictionary position
-# Than the function uses a calibrated camera matrix to calculate the angle of the aruco marker relative to the camera.
-
-# Current Command idea, begin with sending a turn command until the code receives a stop byte 
+# 11/14/2025
+# Description: This function implements trial 1 of demo2
 
 import cv2
 import numpy as np
@@ -32,13 +29,6 @@ print(f"cs is {cx}")
 #Calibration was normalized for inches
 marker_length = 2
 
-#Initialize LCD
-#i2c_lcd = board.I2C()
-#lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, 16,2)
-#lcd.clear()
-#lcd.color = (50, 0, 50)
-#time.sleep(1)
-
 # Initialize camera
 cap = cv2.VideoCapture(0)
 
@@ -47,10 +37,8 @@ aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 parameters = cv2.aruco.DetectorParameters()
 detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 
-
 prev_angle = 0
 change = 1
-
 
 #Averaging values for camera inputs
 avg = 0
