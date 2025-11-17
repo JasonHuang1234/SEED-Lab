@@ -1,3 +1,10 @@
+// Raspberry Pi Remote Start
+// Primary developer: Cameron and Stephanie
+// 11/1/2025
+// Description: Full Arduino sketch for demo 2. Handles motor control and I2C 
+// communications. Gets instruction from Pi with other encoded data. I2C states
+// found in listener from lines 239-304
+
 #define Motor_Enable 4
 #define M1Voltage_Sign 7
 #define M2Voltage_Sign 8
