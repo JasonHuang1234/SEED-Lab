@@ -1,0 +1,97 @@
+Exercise 1
+
+# Kiera Crawford
+# 8/30/2025
+# This program imports a data file onto an array and uses various 
+# python functions and modules to find information of the data set
+# like max and min value, index locations of values, most common 
+# number, and sorted versions of the list
+
+#loads data
+with open('datafile.txt','r') as f:
+    b = eval(f.read())
+
+#prints min and max in data set
+print("The highest number found was %d" % max(b))
+print("The lowest number found was %d" % min(b))
+
+#prints the index that 38 is found at
+print("The first index that 38 was found was %d" % b.index(38))
+
+from collections import Counter #helpful import for array actions
+
+#finds the sorted list of number frequency and outputs the details of the most common
+common = Counter(b).most_common()
+print("The most repeated number is %d. It is found %d time(s) in this data set." % (common[0][0], common[1][0]))
+
+#imports and uses numpy to sort list
+import numpy
+print("Here is the dataset listed in ascending order")
+print(numpy.sort(numpy.array(b)))
+
+#prints a sorted list of the even numbers in list b
+print("Here are all the even numbers found in the list")
+print(sorted(x for x in b if x % 2 == 0))
+
+
+Exercise 2
+# Kiera Crawford
+# 8/31/2025
+# This program uses a state machine to determine if a user 
+# provided string contains 'abcd' anywhere
+
+# sets state to starting position and prompts the user for a string
+state = 0
+userString = input("Please enter a string")
+
+# determines if the next letter is a
+def start_state(letter):
+    if letter == "a":
+        return 1
+    else:
+        return 0
+
+# previous letter should be a, determines if next is a or b, otherwise restarts
+def state_a(letter):
+    if letter == "b":
+        return 2
+    elif letter == "a":
+        return 1
+    else:
+        return 0
+
+# previous letter should be b, determines if next is a or c, otherwise restarts
+def state_b(letter):
+    if letter == "c":
+        return 3
+    elif letter == "a":
+        return 1
+    else:
+        return 0
+
+# previous letter should be c, determines if next is a or d, otherwise restarts
+# if the letter found is d the string contains 'abcd'
+def state_c(letter):
+    if letter == "d":
+        print("The string you provided contains 'abcd'")
+        return 0
+    elif letter == "a":
+        return 1
+    else:
+        return 0
+
+# create a dictionary to describe the states
+state_dictionary = {
+    0 : start_state,
+    1 : state_a,
+    2 : state_b,
+    3 : state_c,
+}
+
+i = 0
+# checks every letter in the user provided string and uses state machine dictionary
+# to determine if 'abcd' is found anywhere in it
+for letter in userString:
+    # uses state dictionary and reference number stored in state to correctly call the next state and pass in the correct letter
+    state = state_dictionary[state](letter)
+print("Done with state machine")
