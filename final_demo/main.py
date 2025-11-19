@@ -163,10 +163,8 @@ while True:
                     time.sleep(1)
                     done = 0
                     break
-                print(f"direction is {direction}")
-                direction = None
-                time.sleep(5)
-                send_command(0,0, "stop")
+        print(f"direction is {direction}")
+        direction = None
 
 
 
