@@ -72,7 +72,6 @@ while True:
     frame = frame[y:y+h, x:x+w]
 
     # Show original vs undistorted
-
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     #Calculate frame center
@@ -160,13 +159,12 @@ while True:
                     send_command(0, 0, "right")
                 else:
                     send_command(0, 0, "stop")
-                    time.sleep(1)
                     done = 0
                     break
         print(f"direction is {direction}")
         direction = None
-
-
+        time.sleep(1)
+        
 
     # Show frame with markers
     cv2.aruco.drawDetectedMarkers(frame, corners, ids)
