@@ -115,7 +115,7 @@ void loop() {
   }
 
   if (spinning) {
-    desired_robot_omega = 0.6;
+    desired_robot_omega = -0.9; //was 0.6 before
     desired_robot_vel = 0;
   } else if (turning) {
     phi_error = desired_phi - phi;
