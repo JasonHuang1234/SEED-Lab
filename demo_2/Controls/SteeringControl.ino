@@ -115,7 +115,7 @@ void loop() {
   }
 
   if (spinning) {
-    desired_robot_omega = -0.9; //was 0.6 before
+    desired_robot_omega = -0.6; //0.6 is the max speed we've tested that works for seeking
     desired_robot_vel = 0;
   } else if (turning) {
     phi_error = desired_phi - phi;
