@@ -122,6 +122,15 @@ void loop() {
     phi_integral_error = constrain(phi_integral_error + phi_error*(sample_time/1000.0f),-1,1);
     desired_robot_vel = 0;
     desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
+
+    if (abs(phi_error) < ANGLE_TOLERANCE) {
+      spinning = false;
+      turning = false;
+      robot_position[0] = 0;
+      robot_position[1] = 0;
+      phi = 0;
+    }
+    
   } else {
     // Find desired robot distance and angle
     x_error = desired_pos_xy[0] - robot_position[0];
