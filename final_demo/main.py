@@ -150,21 +150,23 @@ while True:
     if abs(angle) < 0.5 and abs(distance_val) < 4: #and direction is less than a given error
         send_command(0, 0, "stop")
         time.sleep(0.5)
-        direction = detect_arrow_color(frame, marker_corners)
-        if direction is not None:
-            if direction == "green":
-                send_command(0, 0, "left")
-            elif direction == "red":
-                send_command(0, 0, "right")
-            else:
-                send_command(0, 0, "stop")
-                time.sleep(1)
-                done = 0
-                break
-            print(f"direction is {direction}")
-            direction = None
-            time.sleep(5)
-            send_command(0,0, "stop")
+        if marker_corners is not None:
+            direction = detect_arrow_color(frame, marker_corners)
+            marker_corners = None
+            if direction is not None:
+                if direction == "green":
+                    send_command(0, 0, "left")
+                elif direction == "red":
+                    send_command(0, 0, "right")
+                else:
+                    send_command(0, 0, "stop")
+                    time.sleep(1)
+                    done = 0
+                    break
+                print(f"direction is {direction}")
+                direction = None
+                time.sleep(5)
+                send_command(0,0, "stop")
 
 
 
