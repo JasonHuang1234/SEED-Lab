@@ -165,7 +165,7 @@ while True:
                     break
         print(f"direction is {direction}")
         direction = None
-        time.sleep(1)
+        time.sleep(2)
         send_command(0,0, "stop")
         
 
