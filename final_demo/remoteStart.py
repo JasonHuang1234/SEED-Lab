@@ -70,12 +70,9 @@ def send_command(distance, angle, command_name):
             ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
 
             print(f"Arduino confirmed: {dist_reply:.2f} m, {ang_reply:.2f}°")
-            return
 
         except OSError:
             print("I2C communication error. Check Arduino connection or power.")
-            return
 
     # Small delay for I2C stability
     sleep(0.01)
-    return
