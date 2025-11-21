@@ -164,6 +164,7 @@ while True:
         print(f"direction is {direction}")
         direction = None
         time.sleep(1)
+        send_command(0,0 "stop")
         
 
     # Show frame with markers
