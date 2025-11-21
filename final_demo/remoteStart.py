@@ -49,7 +49,7 @@ def send_command(distance, angle, command_name):
             i2c.i2c_rdwr(reply)
             check = list(reply)
 
-            while (cmd == 3 or cmd == 4):
+            while (cmd == 0x03 or cmd == 0x04):
                 # Continuous send
                 msg = i2c_msg.write(ARD, send)
                 i2c.i2c_rdwr(msg)
@@ -62,7 +62,7 @@ def send_command(distance, angle, command_name):
                 ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
 
                 if ang_reply == 180:
-                    cmd = 0
+                    cmd = 0x00
 
             # Unpack floats
             dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
