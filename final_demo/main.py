@@ -51,7 +51,7 @@ sum2 = 0
 distsum = 0
 avgtot = 1
 angle = 10000
-dist = 1000
+dist = 10000
 firstfind = 1
 
 
@@ -165,6 +165,7 @@ while True:
                     break
         print(f"direction is {direction}")
         direction = None
+        time.sleep(2)
         send_command(0,0, "stop")
         
 
