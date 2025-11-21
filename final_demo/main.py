@@ -130,11 +130,13 @@ while True:
                 firstfind = 1
                 time.sleep(0.5)
             if (change):
+                if abs(angle) > 4:
+                    print(f"angle correct {angle}")
+                    send_command(0, angle, "control")
                 if not (abs(angle) < 0.02 and abs(distance_val) < 4) and abs(angle) < 4 and abs(distance_val) < 52:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
-                    #Update ARGs
                     send_command(distance_val,angle, "control")
             sum = 0
             sum2 = 0
