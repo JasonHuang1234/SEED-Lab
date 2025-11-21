@@ -157,8 +157,10 @@ while True:
             if direction is not None:
                 if direction == "green":
                     send_command(0, 0, "left")
+                    direction = None
                 elif direction == "red":
                     send_command(0, 0, "right")
+                    direction = None
                 else:
                     send_command(0, 0, "stop")
                     done = 0
