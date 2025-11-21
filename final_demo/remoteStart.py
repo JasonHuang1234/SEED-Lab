@@ -63,6 +63,7 @@ def send_command(distance, angle, command_name):
 
                 if ang_reply == 180:
                     cmd = 0x00
+                sleep(1)
 
             # Unpack floats
             dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
