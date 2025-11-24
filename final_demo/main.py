@@ -86,9 +86,17 @@ while True:
     corners, ids, _ = detector.detectMarkers(gray)
 
     if ids is not None:
+        distances = []
         # Pick the lowest marker found
-        marker_index = np.argmin(ids)
-        marker_corners = corners[marker_index]
+        for i, marker_id in enumerate(ids):
+            marker_corners = corners[i]
+            rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(marker_corners,marker_length,newK,None)
+            z = tvec[0][0][2]
+            distances.append(z)
+        closest_index = np.argmin(distances)
+    # Extract the corresponding ID and corners
+        closest_id = ids[closest_index][0]
+        marker_corners = corners[closest_index]
         # Calculate center of marker
         xcenter = np.mean(marker_corners[0][:, 0])
         ycenter = np.mean(marker_corners[0][:, 1])
