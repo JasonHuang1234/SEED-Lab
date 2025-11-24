@@ -166,10 +166,12 @@ while True:
                 if direction == "green":
                     time.sleep(0.1)
                     send_command(0, 0, "left")
+                    time.sleep(0.1)
                     send_command(0, 0, "stop")
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
+                    time.sleep(0.1)
                     send_command(0, 0, "stop")
                 else:
                     time.sleep(0.1)
