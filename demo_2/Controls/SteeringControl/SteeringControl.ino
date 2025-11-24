@@ -37,7 +37,7 @@ float PWM[2], desired_PWM[2];
 
 // Gain variables for proportional and PI controllers
 float Kp_vel[2] = {3,3.4};
-float Kp_rho = 1.5, Kp_phi = 2;
+float Kp_rho = 1, Kp_phi = 1.5;
 float Ki_rho = 0.05, Ki_phi = 0.1;
 
 float actual_vel[2] = {0,0}; // Motor velocity in radians/sec
@@ -115,7 +115,7 @@ void loop() {
   }
 
   if (spinning) {
-    desired_robot_omega = -0.6; //0.6 is the max speed we've tested that works for seeking
+    desired_robot_omega = -0.5; //0.6 is the max speed we've tested that works for seeking
     desired_robot_vel = 0;
   } else if (turning) {
     phi_error = desired_phi - phi;
