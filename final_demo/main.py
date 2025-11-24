@@ -167,12 +167,10 @@ while True:
                     time.sleep(0.1)
                     send_command(0, 0, "left")
                     send_command(0, 0, "stop")
-                    direction = None
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
                     send_command(0, 0, "stop")
-                    direction = None
                 else:
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
@@ -180,6 +178,7 @@ while True:
                     break
         print(f"direction is {direction}")
         direction = None
+        time.sleep(2)
         firstfind = 0
 
 
