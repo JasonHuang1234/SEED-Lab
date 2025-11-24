@@ -63,6 +63,7 @@ while True:
         print("Failed to capture frame")
         time.sleep(1)
         continue
+    marker_corners = None
     
     # Apply undistortion using precomputed maps
     frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
@@ -155,7 +156,7 @@ while True:
         if change and firstfind == 0:
             print("No markers found")
             send_command(0,0, "turn")
-    if abs(angle) < 0.5 and abs(distance_val) < 4: #and direction is less than a given error
+    if abs(angle) < 0.5 and abs(distance_val) < 4 and firstfind == 1: #and direction is less than a given error
         time.sleep(0.1)
         send_command(0, 0, "stop")
         if marker_corners is not None:
