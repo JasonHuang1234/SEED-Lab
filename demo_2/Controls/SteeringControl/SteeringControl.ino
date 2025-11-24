@@ -29,7 +29,7 @@ const float WHEEL_RADIUS = 0.075;              // Wheel radius in meters
 const float WHEEL_BASE = 0.356;    // Distance between wheels in meters
 const int counts_per_rev = 3200; //number of encoder counts per full wheel revolution
 const float BATTERY_VOLTAGE = 7.8;
-const float ANGLE_TOLERANCE = 5 * (pi/180); // 5 degrees in radians
+const float ANGLE_TOLERANCE = 2 * (pi/180); // 2 degrees in radians
 const float DISTANCE_TOLERANCE = 2 * 0.0254; // 1 inch in meters
 
 float applied_voltage_rho[2] = {0,0}, applied_voltage_phi[2] = {0,0};
@@ -124,11 +124,7 @@ void loop() {
     desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
 
     if (abs(phi_error) < ANGLE_TOLERANCE) {
-      spinning = false;
-      turning = false;
-      robot_position[0] = 0;
-      robot_position[1] = 0;
-      phi = 0;
+      received_rotation = 180;
     }
     
   } else {
@@ -296,18 +292,12 @@ void onReceiveEvent(int numBytes) {
       //90 degree left turn
       turning = true;
       spinning = false;      
-      robot_position[0] = 0;
-      robot_position[1] = 0;
-      phi = 0;
       desired_phi = -pi/2;
       break;
     case 4:
       //90 degree right turn
       turning = true;
       spinning = false;
-      robot_position[0] = 0;
-      robot_position[1] = 0;
-      phi = 0;
       desired_phi = pi/2;
       break;
   }
