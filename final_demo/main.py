@@ -119,7 +119,7 @@ while True:
             angle = np.round(angle, 2)
             angle2 = np.round(angle2, 2)
             distance_val = distsum/avg
-            distance_val = distance_val - 9
+            distance_val = distance_val - 14
             if np.round(angle,1) == np.round(prev_angle,1):
                 change = 0
             else:
@@ -131,7 +131,7 @@ while True:
                 firstfind = 1
                 time.sleep(0.1)
             if (change):
-                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 15 and abs(distance_val) < 60:
+                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 60:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
@@ -155,12 +155,15 @@ while True:
             marker_corners = None
             if direction is not None:
                 if direction == "green":
+                    time.sleep(0.1)
                     send_command(0, 0, "left")
                     direction = None
                 elif direction == "red":
+                    time.sleep(0.1)
                     send_command(0, 0, "right")
                     direction = None
                 else:
+                    time.sleep(0.1)
                     send_command(0, 0, "stop")
                     done = 0
                     break
