@@ -191,6 +191,8 @@ while True:
             print(f"direction is {direction}")
             direction = None
             firstfind = 0
+    print("leaving loops")
+    print(f"direction is {direction}")
 
 
 
