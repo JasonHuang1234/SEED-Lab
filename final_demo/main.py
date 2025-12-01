@@ -191,6 +191,7 @@ while True:
             direction = None
             marker_corners = None
             corners = None
+            change = 0
             ids = None
             firstfind = 0
             angle = 10000
