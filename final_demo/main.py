@@ -190,17 +190,12 @@ while True:
             print(f"direction is {direction}")
             direction = None
             marker_corners = None
-            corners = None
-            change = 0
-            ids = None
+            change = 1
             firstfind = 0
             angle = 10000
             dist = 10000
         print("leaving loops")
         print(f"direction is {direction}")
-    else:
-        corners = None
-        ids = None
 
     # Show frame with markers
     cv2.aruco.drawDetectedMarkers(frame, corners, ids)
