@@ -24,6 +24,8 @@ with np.load('calibration_full.npz') as data:
 cx = newK[0,2]
 fx = newK[0,0]
 print(f"cs is {cx}")
+direction = None
+marker_corners = None
 
 
 #Calibration was normalized for inches
