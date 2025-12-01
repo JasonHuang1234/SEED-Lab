@@ -4,8 +4,20 @@ import time
 from direction import detect_arrow_color
 from remoteStart import send_command, poll_turn_done
 
-# ... calibration load etc ...
+with np.load('calibration_full.npz') as data:
+    mtx = data['camera_matrix']
+    dist = data['dist_coeff']
+    mapx = data['mapx']
+    mapy = data['mapy']
+    newK = data['newK']
+    roi = data['roi']
 
+cx = newK[0,2]
+fx = newK[0,0]
+print(f"cs is {cx}")
+
+direction = None
+marker_corners = None
 firstfind = 0
 angle = 10000
 distance_val = 10000
