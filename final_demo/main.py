@@ -84,7 +84,6 @@ while True:
 
     if ids is not None:
         distances = []
-        print("aosjfjnasiondjofnasodnfjoasndfosadnfndsadfnsasfodnaojdfsnofdsn")
         # Pick the lowest marker found
         for i, marker_id in enumerate(ids):
             marker_corners = corners[i]
@@ -135,9 +134,6 @@ while True:
                 print("fistfind set") 
                 firstfind = 1
                 time.sleep(0.1)
-            
-
-
             if (change):
                 if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 60:
                     print(f"angle 1 is {angle} \n")
