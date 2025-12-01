@@ -214,8 +214,8 @@ while True:
             firstfind = 0
             angle = 10000
             dist = 10000
-    print("leaving loops")
-    print(f"direction is {direction}")
+        print("leaving loops")
+        print(f"direction is {direction}")
 
 
 
