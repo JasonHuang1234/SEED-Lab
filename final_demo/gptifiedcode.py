@@ -42,6 +42,20 @@ change = 1
 
 
 turning_after_arrow = False  # NEW
+#Averaging values for camera inputs
+avg = 0
+avg2 = 0
+sum = 0
+sum2 = 0
+distsum = 0
+avgtot = 1
+angle = 10000
+dist = 10000
+firstfind = 0
+direction = None
+marker_corners = None
+corners = None
+ids = None
 
 while True:
     # debug: see if loop is still running
