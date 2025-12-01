@@ -172,13 +172,13 @@ while True:
             if direction is not None:
                 if direction == "green":
                     time.sleep(0.1)
-                    send_command(0, 0, "left")
+                    send_command(0, -90, "control")
                     print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
                 elif direction == "red":
                     time.sleep(0.1)
-                    send_command(0, 0, "right")
+                    send_command(0, 90, "control")
                     print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
