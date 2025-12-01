@@ -84,6 +84,7 @@ while True:
 
     if ids is not None:
         distances = []
+        print("aosjfjnasiondjofnasodnfjoasndfosadnfndsadfnsasfodnaojdfsnofdsn")
         # Pick the lowest marker found
         for i, marker_id in enumerate(ids):
             marker_corners = corners[i]
@@ -211,6 +212,8 @@ while True:
             print(f"direction is {direction}")
             direction = None
             firstfind = 0
+            angle = 10000
+            dist = 10000
     print("leaving loops")
     print(f"direction is {direction}")
 
