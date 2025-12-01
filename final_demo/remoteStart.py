@@ -1,31 +1,21 @@
-# Raspberry Pi Remote Start
-# Primary developer: Kiera Crawford
-# 10/15/2025
-# Description: Transmits target positions to Arduino using I2C until user quits.
-# The Arduino defaults to continuous turning until commanded otherwise.
+# remoteStart.py
 
 from time import sleep
 from smbus2 import SMBus, i2c_msg
 import struct
 
-# Arduino I2C address
 ARD = 0x08
 
-# Command byte meanings (must match Arduino)
 COMMANDS = {
-    "turn": 0x00,
-    "stop": 0x01,
+    "turn":    0x00,
+    "stop":    0x01,
     "control": 0x02,
-    "left": 0x03,
-    "right": 0x04
+    "left":    0x03,
+    "right":   0x04,
 }
 
 def send_command(distance, angle, command_name):
-    print("send called")
-    """
-    Sends a command and two float values (distance, angle) to the Arduino.
-    Can be called from any external script (e.g. vision or control loop).
-    """
+    print("send called:", command_name, distance, angle)
 
     if command_name not in COMMANDS:
         print(f"Invalid command '{command_name}'. Valid commands: {list(COMMANDS.keys())}")
@@ -33,47 +23,46 @@ def send_command(distance, angle, command_name):
 
     cmd = COMMANDS[command_name]
 
-    # Pack floats into bytes (little-endian)
     dist_bytes = struct.pack('<f', float(distance))
-    ang_bytes = struct.pack('<f', float(angle))
-    send = bytes([cmd]) + dist_bytes + ang_bytes  # 9 bytes total
+    ang_bytes  = struct.pack('<f', float(angle))
+    send = bytes([cmd]) + dist_bytes + ang_bytes  # 9 bytes
 
-    with SMBus(1) as i2c:
-        try:
-            # Send command + floats
+    try:
+        with SMBus(1) as i2c:
             msg = i2c_msg.write(ARD, send)
             i2c.i2c_rdwr(msg)
 
-            # Read 8-byte reply (2 floats back from Arduino)
+            # optional single quick reply (only if Arduino always replies fast)
+            # reply = i2c_msg.read(ARD, 8)
+            # i2c.i2c_rdwr(reply)
+
+    except OSError:
+        print("I2C communication error. Check Arduino connection or power.")
+
+    sleep(0.01)
+
+
+# remoteStart.py (same file, below send_command)
+
+def poll_turn_done():
+    """
+    Non-blocking-ish check for 'turn complete'.
+    Returns True if Arduino reported ang_reply == 180.0, else False.
+    """
+    try:
+        with SMBus(1) as i2c:
             reply = i2c_msg.read(ARD, 8)
             i2c.i2c_rdwr(reply)
             check = list(reply)
 
-            while (cmd == 0x03 or cmd == 0x04):
-                # Continuous send
-                msg = i2c_msg.write(ARD, send)
-                i2c.i2c_rdwr(msg)
-
-                reply = i2c_msg.read(ARD, 8)
-                i2c.i2c_rdwr(reply)
-                check = list(reply)
-
-                dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
+            if len(check) >= 8:
                 ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
-
+                # you'll probably want some tolerance here, but let's keep it exact for now:
                 if ang_reply == 180.0:
-                    print("Leaving")
-                    break
+                    print("Arduino reported turn complete (180)")
+                    return True
+    except OSError:
+        # no reply / timeout / bus error = not done (or comm issue)
+        pass
 
-
-            # Unpack floats
-            dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
-            ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
-
-            print(f"Arduino confirmed: {dist_reply:.2f} m, {ang_reply:.2f}°")
-
-        except OSError:
-            print("I2C communication error. Check Arduino connection or power.")
-
-    # Small delay for I2C stability
-    sleep(0.01)
+    return False
