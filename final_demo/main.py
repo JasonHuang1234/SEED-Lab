@@ -134,7 +134,7 @@ while True:
             else:
                 change = 1
             prev_angle = angle
-            if firstfind == 0 and abs(angle < 30):
+            if firstfind == 0 and abs(angle) < 30:
                 print("fistfind set") 
                 firstfind = 1
                 time.sleep(0.1)
@@ -204,12 +204,17 @@ while True:
             dist = 10000
         print("leaving loops")
         print(f"direction is {direction}")
-
-    
+    else:
+        corners = None
+        ids = None
 
     # Show frame with markers
     cv2.aruco.drawDetectedMarkers(frame, corners, ids)
     cv2.imshow("Aruco Detection", frame)
+    corners = None
+    ids = None
+    marker_corners = None
+    direction = None
 
     # Break loop on 'q' key press
     k = cv2.waitKey(1) & 0xFF
