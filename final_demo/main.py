@@ -133,7 +133,6 @@ while True:
             prev_angle = angle
             if firstfind == 0 and abs(angle < 30):
                 print("fistfind set") 
-                send_command(0, 0, "stop")
                 firstfind = 1
                 time.sleep(0.1)
             
