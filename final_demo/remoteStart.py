@@ -62,6 +62,7 @@ def send_command(distance, angle, command_name):
                 ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
 
                 if ang_reply == 180:
+                    print("Leaving")
                     break
                 sleep(1)
 
