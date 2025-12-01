@@ -53,10 +53,8 @@ avgtot = 1
 angle = 10000
 dist = 10000
 firstfind = 1
-roi = roi.flatten()
-x, y, w, h = map(int,roi)
-
-
+roi = np.array(roi).flatten()
+x, y, w, h = map(int, roi)
 while True:
     # Check if the camera frame was successful
     # If unsuccessful throws error and retries
