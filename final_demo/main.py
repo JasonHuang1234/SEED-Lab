@@ -174,11 +174,13 @@ while True:
                 if direction == "green":
                     time.sleep(0.1)
                     send_command(0, 0, "left")
+                    print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
+                    print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
                 else:
@@ -186,10 +188,10 @@ while True:
                     send_command(0, 0, "stop")
                     done = 0
                     break
-        print(f"direction is {direction}")
-        direction = None
-        time.sleep(2)
-        firstfind = 0
+            print(f"direction is {direction}")
+            direction = None
+            time.sleep(2)
+            firstfind = 0
 
 
 
