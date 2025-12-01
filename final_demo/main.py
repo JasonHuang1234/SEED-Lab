@@ -84,6 +84,7 @@ while True:
 
     if ids is not None:
         distances = []
+        print("aosjfjnasiondjofnasodnfjoasndfosadnfndsadfnsasfodnaojdfsnofdsn")
         # Pick the lowest marker found
         for i, marker_id in enumerate(ids):
             marker_corners = corners[i]
@@ -159,11 +160,13 @@ while True:
         time.sleep(0.1)
         send_command(0, 0, "stop")
         ret, frame = cap.read()
+        firstfind = 0
         if not ret:
             continue
         frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = detector.detectMarkers(gray)
+        cv2.aruco.drawDetectedMarkers(frame, corners, ids)
         if ids is not None:
             marker_corners = corners[0]     # use the main marker again
         else: 
@@ -177,11 +180,27 @@ while True:
                     time.sleep(0.1)
                     send_command(0, 0, "left")
                     print("testing")
+                    ret, frame = cap.read()
+                    firstfind = 0
+                    if not ret:
+                        continue
+                    frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    corners, ids, _ = detector.detectMarkers(gray)
+                    cv2.aruco.drawDetectedMarkers(frame, corners, ids)
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
+                    ret, frame = cap.read()
+                    firstfind = 0
+                    if not ret:
+                        continue
+                    frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    corners, ids, _ = detector.detectMarkers(gray)
+                    cv2.aruco.drawDetectedMarkers(frame, corners, ids)
                     print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
@@ -193,6 +212,8 @@ while True:
             print(f"direction is {direction}")
             direction = None
             firstfind = 0
+            angle = 10000
+            dist = 10000
     print("leaving loops")
     print(f"direction is {direction}")
 
