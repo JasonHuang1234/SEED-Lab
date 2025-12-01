@@ -60,11 +60,8 @@ def send_command(distance, angle, command_name):
 
                 dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
                 ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
-
-                if ang_reply == 180.0:
-                    print("Leaving")
-                    break
-                sleep(0.01)
+                sleep(1.5)
+                break
 
             # Unpack floats
             dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
