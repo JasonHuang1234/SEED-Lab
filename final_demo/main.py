@@ -69,6 +69,7 @@ while True:
     frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
 
     # Optional: crop ROI for perfectly rectified image
+    roi = roi.flatten()
     x, y, w, h = map(int,roi)
     frame = frame[y:y+h, x:x+w]
 
@@ -168,7 +169,7 @@ while True:
         corners, ids, _ = detector.detectMarkers(gray)
         if ids is not None:
             marker_corners = corners[0]     # use the main marker again
-        else:
+        else: 
             print("Lost marker before direction detection!")
             continue
         if marker_corners is not None:
