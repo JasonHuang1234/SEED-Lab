@@ -174,12 +174,24 @@ while True:
                 if direction == "green":
                     time.sleep(0.1)
                     send_command(0, 0, "left")
+                    if not ret:
+                        continue
+                    frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    corners, ids, _ = detector.detectMarkers(gray)
+                    cv2.aruco.drawDetectedMarkers(frame, corners, ids)
                     print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
+                    if not ret:
+                        continue
+                    frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    corners, ids, _ = detector.detectMarkers(gray)
+                    cv2.aruco.drawDetectedMarkers(frame, corners, ids)
                     print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
