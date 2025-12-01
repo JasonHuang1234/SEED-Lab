@@ -190,7 +190,6 @@ while True:
                     break
             print(f"direction is {direction}")
             direction = None
-            time.sleep(2)
             firstfind = 0
 
 
