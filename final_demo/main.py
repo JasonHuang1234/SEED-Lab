@@ -95,7 +95,7 @@ while True:
             z = tvec[0][0][2]
             distances.append(z)
         closest_index = np.argmin(distances)
-    # Extract the corresponding ID and corners
+        # Extract the corresponding ID and corners
         closest_id = ids[closest_index][0]
         marker_corners = corners[closest_index]
         # Calculate center of marker
@@ -159,6 +159,18 @@ while True:
     if abs(angle) < 0.5 and abs(distance_val) < 4 and firstfind == 1: #and direction is less than a given error
         time.sleep(0.1)
         send_command(0, 0, "stop")
+        ret, frame = cap.read()
+        if not ret:
+            continue
+        frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+        frame = frame[y:y+h, x:x+w]
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        corners, ids, _ = detector.detectMarkers(gray)
+        if ids is not None:
+            marker_corners = corners[0]     # use the main marker again
+        else:
+            print("Lost marker before direction detection!")
+            continue
         if marker_corners is not None:
             direction = detect_arrow_color(frame, marker_corners)
             marker_corners = None
