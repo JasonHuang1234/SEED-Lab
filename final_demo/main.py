@@ -53,6 +53,8 @@ avgtot = 1
 angle = 10000
 dist = 10000
 firstfind = 1
+roi = roi.flatten()
+x, y, w, h = map(int,roi)
 
 
 while True:
@@ -69,8 +71,6 @@ while True:
     frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
 
     # Optional: crop ROI for perfectly rectified image
-    roi = roi.flatten()
-    x, y, w, h = map(int,roi)
     frame = frame[y:y+h, x:x+w]
 
     # Show original vs undistorted
