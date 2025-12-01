@@ -214,6 +214,14 @@ while True:
             firstfind = 0
             angle = 10000
             dist = 10000
+            ret, frame = cap.read()
+            firstfind = 0
+            if not ret:
+                continue
+            frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            corners, ids, _ = detector.detectMarkers(gray)
+            cv2.aruco.drawDetectedMarkers(frame, corners, ids)
         print("leaving loops")
         print(f"direction is {direction}")
 
