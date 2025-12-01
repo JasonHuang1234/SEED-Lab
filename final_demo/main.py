@@ -69,7 +69,7 @@ while True:
     frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
 
     # Optional: crop ROI for perfectly rectified image
-    x, y, w, h = roi
+    x, y, w, h = map(int,roi)
     frame = frame[y:y+h, x:x+w]
 
     # Show original vs undistorted
