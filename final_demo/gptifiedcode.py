@@ -16,11 +16,30 @@ cx = newK[0,2]
 fx = newK[0,0]
 print(f"cs is {cx}")
 
+
 direction = None
 marker_corners = None
 firstfind = 0
 angle = 10000
 distance_val = 10000
+
+
+#Calibration was normalized for inches
+marker_length = 2
+
+
+# Initialize camera
+cap = cv2.VideoCapture(0)
+
+# Load ArUco dictionary and detector
+aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+parameters = cv2.aruco.DetectorParameters()
+detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
+
+
+prev_angle = 0
+change = 1
+
 
 turning_after_arrow = False  # NEW
 
