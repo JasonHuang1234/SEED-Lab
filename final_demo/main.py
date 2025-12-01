@@ -53,8 +53,6 @@ avgtot = 1
 angle = 10000
 dist = 10000
 firstfind = 1
-
-
 while True:
     # Check if the camera frame was successful
     # If unsuccessful throws error and retries
@@ -67,10 +65,6 @@ while True:
     
     # Apply undistortion using precomputed maps
     frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
-
-    # Optional: crop ROI for perfectly rectified image
-    x, y, w, h = roi
-    frame = frame[y:y+h, x:x+w]
 
     # Show original vs undistorted
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -95,7 +89,7 @@ while True:
             z = tvec[0][0][2]
             distances.append(z)
         closest_index = np.argmin(distances)
-    # Extract the corresponding ID and corners
+        # Extract the corresponding ID and corners
         closest_id = ids[closest_index][0]
         marker_corners = corners[closest_index]
         # Calculate center of marker
@@ -139,6 +133,9 @@ while True:
                 send_command(0, 0, "stop")
                 firstfind = 1
                 time.sleep(0.1)
+            
+
+
             if (change):
                 if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 60:
                     print(f"angle 1 is {angle} \n")
@@ -159,6 +156,17 @@ while True:
     if abs(angle) < 0.5 and abs(distance_val) < 4 and firstfind == 1: #and direction is less than a given error
         time.sleep(0.1)
         send_command(0, 0, "stop")
+        ret, frame = cap.read()
+        if not ret:
+            continue
+        frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        corners, ids, _ = detector.detectMarkers(gray)
+        if ids is not None:
+            marker_corners = corners[0]     # use the main marker again
+        else: 
+            print("Lost marker before direction detection!")
+            continue
         if marker_corners is not None:
             direction = detect_arrow_color(frame, marker_corners)
             marker_corners = None
@@ -166,11 +174,13 @@ while True:
                 if direction == "green":
                     time.sleep(0.1)
                     send_command(0, 0, "left")
+                    print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
+                    print("testing")
                     time.sleep(0.1)
                     send_command(0, 0, "stop")
                 else:
@@ -178,10 +188,9 @@ while True:
                     send_command(0, 0, "stop")
                     done = 0
                     break
-        print(f"direction is {direction}")
-        direction = None
-        time.sleep(2)
-        firstfind = 0
+            print(f"direction is {direction}")
+            direction = None
+            firstfind = 0
 
 
 
