@@ -53,8 +53,6 @@ avgtot = 1
 angle = 10000
 dist = 10000
 firstfind = 1
-roi = np.array(roi).flatten()
-x, y, w, h = map(int, roi)
 while True:
     # Check if the camera frame was successful
     # If unsuccessful throws error and retries
@@ -67,9 +65,6 @@ while True:
     
     # Apply undistortion using precomputed maps
     frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
-
-    # Optional: crop ROI for perfectly rectified image
-    frame = frame[y:y+h, x:x+w]
 
     # Show original vs undistorted
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -162,7 +157,6 @@ while True:
         if not ret:
             continue
         frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
-        frame = frame[y:y+h, x:x+w]
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = detector.detectMarkers(gray)
         if ids is not None:
