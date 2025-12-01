@@ -139,7 +139,7 @@ while True:
                 firstfind = 1
                 time.sleep(0.1)
             if (change):
-                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 60:
+                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 50:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
@@ -160,14 +160,6 @@ while True:
     if abs(angle) < 0.5 and abs(distance_val) < 4 and firstfind == 1: #and direction is less than a given error
         time.sleep(0.1)
         send_command(0, 0, "stop")
-        ret, frame = cap.read()
-        firstfind = 0
-        if not ret:
-            continue
-        frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        corners, ids, _ = detector.detectMarkers(gray)
-        cv2.aruco.drawDetectedMarkers(frame, corners, ids)
         if ids is not None:
             marker_corners = corners[0]     # use the main marker again
         else: 
@@ -211,10 +203,6 @@ while True:
     # Show frame with markers
     cv2.aruco.drawDetectedMarkers(frame, corners, ids)
     cv2.imshow("Aruco Detection", frame)
-    corners = None
-    ids = None
-    marker_corners = None
-    direction = None
 
     # Break loop on 'q' key press
     k = cv2.waitKey(1) & 0xFF
