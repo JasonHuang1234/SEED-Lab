@@ -55,6 +55,10 @@ avgtot = 1
 angle = 10000
 dist = 10000
 firstfind = 0
+direction = None
+marker_corners = None
+corners = None
+ids = None
 while True:
     # Check if the camera frame was successful
     # If unsuccessful throws error and retries
@@ -148,8 +152,6 @@ while True:
     
     # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
     else:
-        corners = None
-        ids = None
         if change and firstfind == 0:
             print("No markers found")
             send_command(0,0, "turn")
