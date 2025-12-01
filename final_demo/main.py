@@ -159,6 +159,7 @@ while True:
         time.sleep(0.1)
         send_command(0, 0, "stop")
         ret, frame = cap.read()
+        firstfind = 0
         if not ret:
             continue
         frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
