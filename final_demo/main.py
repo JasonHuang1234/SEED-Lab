@@ -134,12 +134,14 @@ while True:
             else:
                 change = 1
             prev_angle = angle
-            if firstfind == 0 and abs(angle) < 30 and abs(angle) > 10:
-                send_command(0, angle, "angle")
+            if firstfind == 0:
                 print("fistfind set") 
+                send_command(0,0, "stop")
                 firstfind = 1
-                time.sleep(0.1)
+                time.sleep(1)
             if (change):
+                if abs(angle) > 10:
+                    send_command(0, angle, "angle")
                 if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 50:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
