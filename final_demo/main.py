@@ -142,7 +142,7 @@ while True:
             if (change):
                 if abs(angle) > 10:
                     send_command(0, angle, "angle")
-                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 50:
+                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) <= 10 and abs(distance_val) < 50:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
