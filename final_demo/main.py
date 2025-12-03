@@ -191,16 +191,9 @@ while True:
             direction = None
             marker_corners = None
             change = 1
-            corners = None
-            ids = None
             firstfind = 0
             angle = 10000
             dist = 10000
-            ret, frame = cap.read()
-            if not ret:
-                print("Failed to capture frame")
-                time.sleep(1)
-                continue
         print("leaving loops")
         print(f"direction is {direction}")
 
