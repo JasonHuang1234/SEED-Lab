@@ -135,7 +135,7 @@ while True:
                 change = 1
             prev_angle = angle
             if firstfind == 0 and abs(angle) < 30:
-                print("fistfind set") 
+                print("fistfind set")
                 firstfind = 1
                 send_command(0,0, "turn")
                 time.sleep(0.1)
@@ -194,6 +194,11 @@ while True:
             firstfind = 0
             angle = 10000
             dist = 10000
+            ret, frame = cap.read()
+            if not ret:
+                print("Failed to capture frame")
+                time.sleep(1)
+                continue
         print("leaving loops")
         print(f"direction is {direction}")
 
