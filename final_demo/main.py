@@ -176,13 +176,13 @@ while True:
                     time.sleep(0.1)
                     send_command(0, 0, "left")
                     print("testing")
-                    time.sleep(0.1)
+                    time.sleep(3)
                     send_command(0, 0, "stop")
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
                     print("testing")
-                    time.sleep(0.1)
+                    time.sleep(3)
                     send_command(0, 0, "stop")
                 else:
                     time.sleep(0.1)
