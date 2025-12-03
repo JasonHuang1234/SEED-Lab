@@ -17,8 +17,8 @@
 #define MY_ADDR 0x08  // Arduino's I2C address
 #include <Wire.h>
 
-float received_distance = 0.0;
-float received_rotation = 0.0;
+volatile float received_distance = 0.0;
+volatile float received_rotation = 0.0;
 bool received = false;
 byte command = 0; 
 bool turning = false;
