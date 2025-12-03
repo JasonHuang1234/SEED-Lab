@@ -134,17 +134,15 @@ while True:
             else:
                 change = 1
             prev_angle = angle
-            if firstfind == 0:
+            if firstfind == 0 and abs(angle) < 30:
                 print("fistfind set") 
-                send_command(0,0, "stop")
                 firstfind = 1
-                time.sleep(1)
+                send_command(0,0, "turn")
+                time.sleep(0.1)
             if (change):
-                if abs(angle) > 10 and abs(distance_val) < 50:
-                    print(f"angle sent is {angle}")
-                    send_command(0, angle, "angle")
-                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) <= 10 and abs(distance_val) < 50:
+                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 50:
                     print(f"angle 1 is {angle} \n")
+                    print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
                     time.sleep(0.1)
                     send_command(distance_val,angle, "control")
@@ -176,13 +174,13 @@ while True:
                     time.sleep(0.1)
                     send_command(0, 0, "left")
                     print("testing")
-                    time.sleep(3)
+                    time.sleep(0.1)
                     send_command(0, 0, "stop")
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
                     print("testing")
-                    time.sleep(3)
+                    time.sleep(0.1)
                     send_command(0, 0, "stop")
                 else:
                     time.sleep(0.1)
