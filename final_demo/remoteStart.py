@@ -53,10 +53,12 @@ def send_command(distance, angle, command_name):
                 # Continuous send
                 msg = i2c_msg.write(ARD, send)
                 i2c.i2c_rdwr(msg)
+                sleep(0.1)
 
                 reply = i2c_msg.read(ARD, 8)
                 i2c.i2c_rdwr(reply)
                 check = list(reply)
+                sleep(0.1)
 
                 dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
                 ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
