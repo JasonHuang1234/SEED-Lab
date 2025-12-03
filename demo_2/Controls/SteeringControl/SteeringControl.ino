@@ -304,7 +304,7 @@ void onReceiveEvent(int numBytes) {
       //turning to an angle
       turning = true;
       spinning = false;
-      desired_phi = received_rotation;
+      desired_phi = received_rotation*(pi/180);
       break;
   }
 }
