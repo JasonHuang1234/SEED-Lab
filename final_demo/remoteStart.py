@@ -17,12 +17,11 @@ COMMANDS = {
     "stop": 0x01,
     "control": 0x02,
     "left": 0x03,
-    "right": 0x04,
-    "angle": 0x05
+    "right": 0x04
 }
 
 def send_command(distance, angle, command_name):
-    print(f"Command sent: '{command_name}'")
+    print("send called")
     """
     Sends a command and two float values (distance, angle) to the Arduino.
     Can be called from any external script (e.g. vision or control loop).
@@ -50,15 +49,21 @@ def send_command(distance, angle, command_name):
             i2c.i2c_rdwr(reply)
             check = list(reply)
 
-            # msg = i2c_msg.write(ARD, send)
-            # i2c.i2c_rdwr(msg)
+            while (cmd == 0x03 or cmd == 0x04):
+                # Continuous send
+                msg = i2c_msg.write(ARD, send)
+                i2c.i2c_rdwr(msg)
 
-            # reply = i2c_msg.read(ARD, 8)
-            # i2c.i2c_rdwr(reply)
-            # check = list(reply)
+                reply = i2c_msg.read(ARD, 8)
+                i2c.i2c_rdwr(reply)
+                check = list(reply)
 
-            # dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
-            # ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
+                dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
+                ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
+
+                if ang_reply == 180.0:
+                    print("Leaving")
+                    break
 
             # Unpack floats
             dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
