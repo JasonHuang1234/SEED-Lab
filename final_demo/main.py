@@ -43,6 +43,7 @@ detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 
 prev_angle = 0
 change = 1
+turned = 0
 
 
 #Averaging values for camera inputs
@@ -145,6 +146,7 @@ while True:
                     print(f"distance in inches from marker is {distance_val} \n")
                     time.sleep(0.1)
                     send_command(distance_val,angle, "control")
+                    turned = 0
             sum = 0
             sum2 = 0
             avg = 0
@@ -155,7 +157,7 @@ while True:
         if change and firstfind == 0:
             print("No markers found")
             send_command(0,0, "turn")
-    if abs(angle) < 0.5 and abs(distance_val) < 4 and firstfind == 1: #and direction is less than a given error
+    if abs(angle) < 0.5 and abs(distance_val) < 4 and firstfind == 1 and turned = 0: #and direction is less than a given error
         time.sleep(0.1)
         send_command(0, 0, "stop")
         if ids is not None:
@@ -191,6 +193,7 @@ while True:
             firstfind = 0
             angle = 10000
             dist = 10000
+            turned = 1
         print("leaving loops")
         print(f"direction is {direction}")
 
