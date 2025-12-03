@@ -22,7 +22,6 @@ COMMANDS = {
 }
 
 def send_command(distance, angle, command_name):
-    print("send called")
     print(f"Command sent: '{command_name}'")
     """
     Sends a command and two float values (distance, angle) to the Arduino.
