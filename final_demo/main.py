@@ -140,7 +140,7 @@ while True:
                 firstfind = 1
                 time.sleep(1)
             if (change):
-                if abs(angle) > 10:
+                if abs(angle) > 10 and abs(distance_val) < 50:
                     print(f"angle sent is {angle}")
                     send_command(0, angle, "angle")
                 if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) <= 10 and abs(distance_val) < 50:
