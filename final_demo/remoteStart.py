@@ -50,15 +50,15 @@ def send_command(distance, angle, command_name):
             i2c.i2c_rdwr(reply)
             check = list(reply)
 
-            msg = i2c_msg.write(ARD, send)
-            i2c.i2c_rdwr(msg)
+            # msg = i2c_msg.write(ARD, send)
+            # i2c.i2c_rdwr(msg)
 
-            reply = i2c_msg.read(ARD, 8)
-            i2c.i2c_rdwr(reply)
-            check = list(reply)
+            # reply = i2c_msg.read(ARD, 8)
+            # i2c.i2c_rdwr(reply)
+            # check = list(reply)
 
-            dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
-            ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
+            # dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
+            # ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
 
             # Unpack floats
             dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
