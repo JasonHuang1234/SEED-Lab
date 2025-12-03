@@ -16,6 +16,8 @@
 #define M2EncB 6
 #define MY_ADDR 0x08  // Arduino's I2C address
 #include <Wire.h>
+#include <avr/wdt.h>
+
 
 volatile float received_distance = 0.0;
 volatile float received_rotation = 0.0;
@@ -124,7 +126,11 @@ void loop() {
     desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
     
     if (abs(phi_error) < ANGLE_TOLERANCE) {
-      received_rotation = 180;
+      //received_rotation = 180;
+      // Reset Arduino after successful 90° turn
+      wdt_enable(WDTO_15MS);  // watchdog will reset in ~15 ms
+      while (true) {}         // wait until reset occurs
+
     }
     
   } else {
