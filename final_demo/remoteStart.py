@@ -50,6 +50,12 @@ def send_command(distance, angle, command_name):
             check = list(reply)
 
             while (cmd == 0x03 or cmd == 0x04):
+                dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
+                ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
+
+                if ang_reply == 180.0:
+                    print("Leaving")
+                    break
                 # Continuous send
                 msg = i2c_msg.write(ARD, send)
                 i2c.i2c_rdwr(msg)
@@ -57,13 +63,6 @@ def send_command(distance, angle, command_name):
                 reply = i2c_msg.read(ARD, 8)
                 i2c.i2c_rdwr(reply)
                 check = list(reply)
-
-                dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
-                ang_reply = struct.unpack('<f', bytes(check[4:8]))[0]
-
-                if ang_reply == 180.0:
-                    print("Leaving")
-                    break
 
             # Unpack floats
             dist_reply = struct.unpack('<f', bytes(check[0:4]))[0]
