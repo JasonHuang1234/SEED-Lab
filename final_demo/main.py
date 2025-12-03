@@ -189,6 +189,8 @@ while True:
             print(f"direction is {direction}")
             direction = None
             marker_corners = None
+            corners = None
+            ids = None
             change = 1
             firstfind = 0
             angle = 10000
