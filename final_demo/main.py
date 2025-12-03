@@ -128,7 +128,7 @@ while True:
             angle = np.round(angle, 2)
             angle2 = np.round(angle2, 2)
             distance_val = distsum/avg
-            distance_val = distance_val - 11
+            distance_val = distance_val - 12
             if np.round(angle,1) == np.round(prev_angle,1):
                 change = 0
             else:
