@@ -152,8 +152,6 @@ while True:
     
     # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
     else:
-        corners = None
-        ids = None
         if change and firstfind == 0:
             print("No markers found")
             send_command(0,0, "turn")
@@ -189,8 +187,6 @@ while True:
             print(f"direction is {direction}")
             direction = None
             marker_corners = None
-            corners = None
-            ids = None
             change = 1
             firstfind = 0
             angle = 10000
