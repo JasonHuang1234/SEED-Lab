@@ -205,6 +205,9 @@ while True:
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
         break
+    corners = None
+    ids = None
+    frame = None
 
 # Cleanup
 cap.release()
