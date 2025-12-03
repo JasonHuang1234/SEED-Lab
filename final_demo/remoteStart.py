@@ -17,7 +17,8 @@ COMMANDS = {
     "stop": 0x01,
     "control": 0x02,
     "left": 0x03,
-    "right": 0x04
+    "right": 0x04,
+    "angle": 0x05
 }
 
 def send_command(distance, angle, command_name):
