@@ -37,8 +37,8 @@ float PWM[2], desired_PWM[2];
 
 // Gain variables for proportional and PI controllers
 float Kp_vel[2] = {3,3.4};
-float Kp_rho = 1, Kp_phi = 1.5;
-float Ki_rho = 0.05, Ki_phi = 0.1;
+float Kp_rho = 0.5, Kp_phi = 0.5;
+float Ki_rho = 0.05, Ki_phi = 0.05;
 
 float actual_vel[2] = {0,0}; // Motor velocity in radians/sec
 
@@ -219,6 +219,7 @@ void loop() {
 
   while (millis()<last_time_ms + sample_time) {}// Wait until desired time passes to go top of the loop
   last_time_ms = millis(); // Update time
+  // Serial.println("Main Loop Completed");
 
 }
 
@@ -257,6 +258,12 @@ void onReceiveEvent(int numBytes) {
     received_distance = dist.f;
     received_rotation = rot.f;
     received = true;
+    /*
+    Serial.print("Recieved Distance: ");
+    Serial.print(received_distance);
+    Serial.print("Recieved Angle: ");
+    Serial.println(received_rotation);
+    */
   }
 
   switch (command) {
@@ -300,12 +307,6 @@ void onReceiveEvent(int numBytes) {
       spinning = false;
       desired_phi = pi/2;
       break;
-    case 5:
-      //turning to an angle
-      turning = true;
-      spinning = false;
-      desired_phi = received_rotation*(pi/180);
-      break;
   }
 }
 
@@ -315,4 +316,8 @@ void onRequestEvent() {
   rot.f = received_rotation;
   for (int i = 0; i < 4; i++) Wire.write(dist.b[i]);
   for (int i = 0; i < 4; i++) Wire.write(rot.b[i]);
+  Serial.print("Returned Distance: ");
+  Serial.print(received_distance);
+  Serial.print("Returned Angle: ");
+  Serial.println(received_rotation);
 }
