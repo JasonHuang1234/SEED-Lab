@@ -151,10 +151,10 @@ while True:
             distsum = 0
     
     # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
-    else:
-        if change and firstfind == 0:
-            print("No markers found")
-            send_command(0,0, "turn")
+    # else:
+    #     if change and firstfind == 0:
+    #         print("No markers found")
+    #         send_command(0,0, "turn")
     if abs(angle) < 0.5 and abs(distance_val) < 4 and done == 0: #and direction is less than a given error
         send_command(0, 0, "stop")
         time.sleep(0.5)
