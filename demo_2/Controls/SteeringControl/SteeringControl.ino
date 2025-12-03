@@ -300,6 +300,12 @@ void onReceiveEvent(int numBytes) {
       spinning = false;
       desired_phi = pi/2;
       break;
+    case 5:
+      //turning to an angle
+      turning = true;
+      spinning = false;
+      desired_phi = received_rotation;
+      break;
   }
 }
 
