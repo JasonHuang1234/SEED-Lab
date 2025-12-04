@@ -43,6 +43,7 @@ detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 
 prev_angle = 0
 change = 1
+turned = 0
 
 
 #Averaging values for camera inputs
@@ -128,7 +129,7 @@ while True:
             angle = np.round(angle, 2)
             angle2 = np.round(angle2, 2)
             distance_val = distsum/avg
-            distance_val = distance_val - 14
+            distance_val = distance_val - 12
             if np.round(angle,1) == np.round(prev_angle,1):
                 change = 0
             else:
@@ -137,15 +138,15 @@ while True:
             if firstfind == 0 and abs(angle) < 30:
                 print("fistfind set")
                 firstfind = 1
-                send_command(0,0, "turn")
                 time.sleep(0.1)
             if (change):
-                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 10 and abs(distance_val) < 50:
+                if not (abs(angle) < 0.5 and abs(distance_val) < 4) and abs(angle) < 20 and abs(distance_val) < 55:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
                     time.sleep(0.1)
                     send_command(distance_val,angle, "control")
+                    turned = 0
             sum = 0
             sum2 = 0
             avg = 0
@@ -153,12 +154,10 @@ while True:
     
     # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
     else:
-        corners = None
-        ids = None
         if change and firstfind == 0:
             print("No markers found")
             send_command(0,0, "turn")
-    if abs(angle) < 0.5 and abs(distance_val) < 4 and firstfind == 1: #and direction is less than a given error
+    if abs(angle) < 0.5 and abs(distance_val) < 4 and firstfind == 1 and turned == 0: #and direction is less than a given error
         time.sleep(0.1)
         send_command(0, 0, "stop")
         if ids is not None:
@@ -191,16 +190,10 @@ while True:
             direction = None
             marker_corners = None
             change = 1
-            corners = None
-            ids = None
             firstfind = 0
             angle = 10000
             dist = 10000
-            ret, frame = cap.read()
-            if not ret:
-                print("Failed to capture frame")
-                time.sleep(1)
-                continue
+            turned = 1
         print("leaving loops")
         print(f"direction is {direction}")
 
@@ -212,6 +205,9 @@ while True:
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
         break
+    corners = None
+    ids = None
+    frame = None
 
 # Cleanup
 cap.release()
