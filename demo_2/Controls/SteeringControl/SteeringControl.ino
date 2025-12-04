@@ -31,7 +31,7 @@ const float WHEEL_RADIUS = 0.075;              // Wheel radius in meters
 const float WHEEL_BASE = 0.356;    // Distance between wheels in meters
 const int counts_per_rev = 3200; //number of encoder counts per full wheel revolution
 const float BATTERY_VOLTAGE = 7.8;
-const float ANGLE_TOLERANCE = 2 * (pi/180); // 2 degrees in radians
+const float ANGLE_TOLERANCE = 3 * (pi/180); // 2 degrees in radians
 const float DISTANCE_TOLERANCE = 2 * 0.0254; // 1 inch in meters
 
 float applied_voltage_rho[2] = {0,0}, applied_voltage_phi[2] = {0,0};
@@ -39,8 +39,8 @@ float PWM[2], desired_PWM[2];
 
 // Gain variables for proportional and PI controllers
 float Kp_vel[2] = {3,3.4};
-float Kp_rho = 0.5, Kp_phi = 0.5;
-float Ki_rho = 0.05, Ki_phi = 0.05;
+float Kp_rho = 0.5, Kp_phi = 1.1;
+float Ki_rho = 0.05, Ki_phi = 0.1;
 
 float actual_vel[2] = {0,0}; // Motor velocity in radians/sec
 
@@ -126,10 +126,10 @@ void loop() {
     desired_robot_omega = Kp_phi*phi_error + Ki_phi*phi_integral_error;
     
     if (abs(phi_error) < ANGLE_TOLERANCE) {
-      //received_rotation = 180;
+      received_rotation = 180;
       // Reset Arduino after successful 90° turn
-      wdt_enable(WDTO_15MS);  // watchdog will reset in ~15 ms
-      while (true) {}         // wait until reset occurs
+      // wdt_enable(WDTO_15MS);  // watchdog will reset in ~15 ms
+      // while (true) {}         // wait until reset occurs
 
     }
     
@@ -177,7 +177,7 @@ void loop() {
     actual_vel[i] = (wheel_rad[i] - prev_rad[i]) / (sample_time/1000.0f);
 
     // Calculate applied voltage
-    applied_voltage_rho[i] = constrain(Kp_vel[i]*( (desired_robot_vel / WHEEL_RADIUS) - actual_vel[i] ),-BATTERY_VOLTAGE,BATTERY_VOLTAGE);
+    applied_voltage_rho[i] = constrain(Kp_vel[i]*( (desired_robot_vel / WHEEL_RADIUS) - actual_vel[i] ),-BATTERY_VOLTAGE+1,BATTERY_VOLTAGE-1);
     applied_voltage_phi[i] = Kp_vel[i]*(desired_robot_omega * (WHEEL_BASE/(2*WHEEL_RADIUS)));
 
     // For odometry
@@ -190,8 +190,8 @@ void loop() {
   desired_PWM[1] = (abs(applied_voltage_rho[1]+applied_voltage_phi[1]) / BATTERY_VOLTAGE) * 255;
   PWM[0] += constrain(desired_PWM[0] - PWM[0],-10,10); // Limit change in PWM to prevent slipping
   PWM[1] += constrain(desired_PWM[1] - PWM[1],-10,10);
-  PWM[0] = constrain(PWM[0],0,255); // Clamp PWM from 0 to 255
-  PWM[1] = constrain(PWM[1],0,255);
+  PWM[0] = constrain(PWM[0],0,210); // Clamp PWM from 0 to 255
+  PWM[1] = constrain(PWM[1],0,210);
 
   // Set motor driver sign pins
   if ( (applied_voltage_rho[0]-applied_voltage_phi[0]) > 0) { digitalWrite(M1Voltage_Sign, HIGH); }  
@@ -322,8 +322,10 @@ void onRequestEvent() {
   rot.f = received_rotation;
   for (int i = 0; i < 4; i++) Wire.write(dist.b[i]);
   for (int i = 0; i < 4; i++) Wire.write(rot.b[i]);
+  /*
   Serial.print("Returned Distance: ");
   Serial.print(received_distance);
   Serial.print("Returned Angle: ");
   Serial.println(received_rotation);
+  */
 }
