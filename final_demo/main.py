@@ -140,7 +140,7 @@ while True:
                 firstfind = 1
                 time.sleep(0.1)
             if (change):
-                if not (abs(angle) < 4 and abs(distance_val) < 5) and abs(angle) < 22 and abs(distance_val) < 55:
+                if not (abs(angle) < 4 and abs(distance_val) < 5) and abs(angle) < 20 and abs(distance_val) < 55:
                     print(f"angle 1 is {angle} \n")
                     print(f"angle 2 is {angle2} \n")
                     print(f"distance in inches from marker is {distance_val} \n")
@@ -174,7 +174,7 @@ while True:
                     send_command(0, 0, "left")
                     print("testing")
                     time.sleep(0.1)
-                    send_command(0, 0, "stop")
+                    send_command(0, 0, "stop") 
                 elif direction == "red":
                     time.sleep(0.1)
                     send_command(0, 0, "right")
