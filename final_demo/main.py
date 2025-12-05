@@ -44,7 +44,6 @@ detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 prev_angle = 0
 change = 1
 turned = 0
-abort = 0
 
 
 #Averaging values for camera inputs
@@ -89,7 +88,6 @@ while True:
     corners, ids, _ = detector.detectMarkers(gray)
 
     if ids is not None:
-        abort = 1
         distances = []
         # Pick the lowest marker found
         for i, marker_id in enumerate(ids):
@@ -156,9 +154,7 @@ while True:
     
     # In this no markers section Im thinking I will send a cmd to arduino telling it to turn, so 0x00 cmd
     else:
-        if abort == 1:
-            send_command(0,0, "stop")
-        if change and firstfind == 0 and abort == 0:
+        if change and firstfind == 0:
             print("No markers found")
             send_command(0,0, "turn")
     if abs(angle) < 4 and abs(distance_val) < 4 and firstfind == 1 and turned == 0: #and direction is less than a given error
